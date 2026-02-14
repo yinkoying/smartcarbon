@@ -219,7 +219,6 @@
             const btn = document.getElementById('calc-btn');
             const debug = document.getElementById('aws-debug');
             
-            // 收集數據
             const payload = {
                 diesel: parseFloat(document.getElementById('input-diesel').value) || 0,
                 gasoline: parseFloat(document.getElementById('input-gasoline').value) || 0,
@@ -246,32 +245,29 @@
                 if (!response.ok) throw new Error(`HTTP 錯誤: ${response.status}`);
                 const res = await response.json();
                 
-                // 打印原始結果以便偵錯
-                console.log("Lambda Response:", res);
-
-                // --- 智能解析回傳格式 ---
-                // 處理可能有 data 包裹或沒有 data 包裹的情況
+                // 兼容多種回傳格式
                 const carbonData = res.data || res; 
                 const total = carbonData.total_tCO2e !== undefined ? carbonData.total_tCO2e : 0;
                 
-                // 處理分層數據
+                // 檢查是否有分層數據 (V2.0 版 Lambda 才會回傳 breakdown)
                 const breakdown = carbonData.breakdown || {
                     scope1: carbonData.scope1 || 0,
                     scope2: carbonData.scope2 || 0,
                     scope3: carbonData.scope3 || 0
                 };
 
-                // 更新 UI 顯示
+                // 更新 UI
                 document.getElementById('result-total').innerHTML = `${total} <span class="text-sm font-normal">tCO2e</span>`;
                 document.getElementById('res-s1').innerText = breakdown.scope1 || 0;
                 document.getElementById('res-s2').innerText = breakdown.scope2 || 0;
                 document.getElementById('res-s3').innerText = breakdown.scope3 || 0;
                 
-                debug.innerText = `> 狀態：200 OK\n> 來源：AWS Lambda (已自動適應格式)\n> 回傳內容：${JSON.stringify(res, null, 2)}`;
+                let versionNote = carbonData.breakdown ? "偵測到 V2.0 分層數據" : "偵測到基礎版數據 (無分層)";
+                debug.innerText = `> 狀態：200 OK (${versionNote})\n> 回傳內容：${JSON.stringify(res, null, 2)}`;
 
             } catch (err) {
                 console.error("Connection Error:", err);
-                debug.innerText = `> 失敗原因：${err.message}\n> 錯誤細節：請檢查 F12 控制台的 Network 標籤。`;
+                debug.innerText = `> 失敗原因：${err.message}\n> 錯誤細節：請檢查 F12 控制台。`;
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = '呼叫 AWS Lambda 運算';
