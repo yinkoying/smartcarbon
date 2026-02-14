@@ -180,7 +180,7 @@
                                 呼叫 AWS Lambda 運算
                             </button>
                         </div>
-                        <div id="aws-debug" class="hidden mt-4 p-3 bg-black rounded text-green-400 font-mono text-[10px] overflow-x-auto"></div>
+                        <div id="aws-debug" class="hidden mt-4 p-3 bg-black rounded text-green-400 font-mono text-[10px] overflow-x-auto whitespace-pre-wrap"></div>
                     </div>
                 </div>
 
@@ -221,18 +221,18 @@
             
             // 收集數據
             const payload = {
-                diesel: document.getElementById('input-diesel').value || 0,
-                gasoline: document.getElementById('input-gasoline').value || 0,
-                gas: document.getElementById('input-gas').value || 0,
-                power: document.getElementById('input-power').value || 0,
-                water: document.getElementById('input-water').value || 0,
-                travel: document.getElementById('input-travel').value || 0
+                diesel: parseFloat(document.getElementById('input-diesel').value) || 0,
+                gasoline: parseFloat(document.getElementById('input-gasoline').value) || 0,
+                gas: parseFloat(document.getElementById('input-gas').value) || 0,
+                power: parseFloat(document.getElementById('input-power').value) || 0,
+                water: parseFloat(document.getElementById('input-water').value) || 0,
+                travel: parseFloat(document.getElementById('input-travel').value) || 0
             };
 
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> 雲端運算中...';
             debug.classList.remove('hidden');
-            debug.innerText = "> 發送 6 項指標數據至 AWS Lambda URL...";
+            debug.innerText = "> 正在向 AWS 發送加密請求...";
 
             const lambdaUrl = "https://p5m47aire4jf7yfjox2natmszq0pzmdy.lambda-url.ap-northeast-1.on.aws";
 
@@ -243,18 +243,35 @@
                     body: JSON.stringify(payload)
                 });
 
-                if (!response.ok) throw new Error(`連線失敗: ${response.status}`);
+                if (!response.ok) throw new Error(`HTTP 錯誤: ${response.status}`);
                 const res = await response.json();
                 
-                // 更新 UI
-                document.getElementById('result-total').innerHTML = `${res.data.total_tCO2e} <span class="text-sm font-normal">tCO2e</span>`;
-                document.getElementById('res-s1').innerText = res.data.breakdown.scope1;
-                document.getElementById('res-s2').innerText = res.data.breakdown.scope2;
-                document.getElementById('res-s3').innerText = res.data.breakdown.scope3;
+                // 打印原始結果以便偵錯
+                console.log("Lambda Response:", res);
+
+                // --- 智能解析回傳格式 ---
+                // 處理可能有 data 包裹或沒有 data 包裹的情況
+                const carbonData = res.data || res; 
+                const total = carbonData.total_tCO2e !== undefined ? carbonData.total_tCO2e : 0;
                 
-                debug.innerText = `> 狀態：200 OK\n> 來源：AWS Lambda (V2.0)\n> 回傳數據：${JSON.dumps(res.data.breakdown)}`;
+                // 處理分層數據
+                const breakdown = carbonData.breakdown || {
+                    scope1: carbonData.scope1 || 0,
+                    scope2: carbonData.scope2 || 0,
+                    scope3: carbonData.scope3 || 0
+                };
+
+                // 更新 UI 顯示
+                document.getElementById('result-total').innerHTML = `${total} <span class="text-sm font-normal">tCO2e</span>`;
+                document.getElementById('res-s1').innerText = breakdown.scope1 || 0;
+                document.getElementById('res-s2').innerText = breakdown.scope2 || 0;
+                document.getElementById('res-s3').innerText = breakdown.scope3 || 0;
+                
+                debug.innerText = `> 狀態：200 OK\n> 來源：AWS Lambda (已自動適應格式)\n> 回傳內容：${JSON.stringify(res, null, 2)}`;
+
             } catch (err) {
-                debug.innerText = `> 錯誤：${err.message}\n> 請確認 Lambda 已 Deploy 並設置 CORS。`;
+                console.error("Connection Error:", err);
+                debug.innerText = `> 失敗原因：${err.message}\n> 錯誤細節：請檢查 F12 控制台的 Network 標籤。`;
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = '呼叫 AWS Lambda 運算';
