@@ -235,7 +235,10 @@
             try {
                 const response = await fetch(lambdaUrl, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    mode: 'cors',
+                    headers: { 
+                        'Content-Type': 'application/json'
+                    },
                     body: JSON.stringify({ diesel: diesel, power: power })
                 });
 
@@ -249,7 +252,7 @@
 
             } catch (error) {
                 console.error('Error:', error);
-                debugDiv.innerText = `> 錯誤：${error.message}\n> 請檢查網路連線或跨域設定。`;
+                debugDiv.innerText = `> 錯誤：${error.message}\n> 1. 請檢查 AWS Lambda 的 Function URL 是否開啟了 CORS 設定。\n> 2. 確保 Allow Methods 包含 POST 與 OPTIONS。\n> 3. 確保 Allow Headers 包含 content-type。`;
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = '<i class="fa-solid fa-play mr-2"></i> 呼叫 AWS';
