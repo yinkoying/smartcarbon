@@ -223,9 +223,9 @@
             debugDiv.classList.remove('hidden');
             debugDiv.innerText = "> 正在發送請求至 AWS Lambda...";
 
-            const lambdaUrl = "YOUR_AWS_LAMBDA_URL_HERE"; 
+            const lambdaUrl = "https://p5m47aire4jf7yfjox2natmszq0pzmdy.lambda-url.ap-northeast-1.on.aws/"; 
 
-            if (lambdaUrl === "YOUR_AWS_LAMBDA_URL_HERE") {
+            if (lambdaUrl === "https://p5m47aire4jf7yfjox2natmszq0pzmdy.lambda-url.ap-northeast-1.on.aws/") {
                 alert("請於程式碼中設定正確的 AWS Lambda 網址");
                 btn.disabled = false;
                 btn.innerHTML = '<i class="fa-solid fa-play mr-2"></i> 呼叫 AWS';
