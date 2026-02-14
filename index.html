@@ -215,23 +215,27 @@
             debugDiv.classList.remove('hidden');
             debugDiv.innerText = "> 正在向 AWS 進行加密通訊...";
 
-            const lambdaUrl = "https://p5m47aire4jf7yfjox2natmszq0pzmdy.lambda-url.ap-northeast-1.on.aws"; 
+            // 自動修復網址：移除末端斜線並加入快取破除參數
+            let rawUrl = "https://p5m47aire4jf7yfjox2natmszq0pzmdy.lambda-url.ap-northeast-1.on.aws"; 
+            if (rawUrl.endsWith('/')) rawUrl = rawUrl.slice(0, -1);
+            const lambdaUrl = `${rawUrl}?t=${new Date().getTime()}`;
 
             try {
                 const response = await fetch(lambdaUrl, {
                     method: 'POST',
+                    mode: 'cors', // 強制使用 CORS 模式
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ diesel: diesel, power: power })
+                    body: JSON.stringify({ diesel: parseFloat(diesel), power: parseFloat(power) })
                 });
 
                 if (!response.ok) throw new Error(`HTTP 錯誤：${response.status}`);
                 const data = await response.json();
                 
                 resultDiv.innerHTML = `${data.total_tCO2e} <span class="text-sm font-normal">tCO2e</span>`;
-                debugDiv.innerHTML = `> 狀態：${response.status} OK\n> 來源：AWS Lambda\n> 計算完成。`;
+                debugDiv.innerHTML = `> 狀態：${response.status} OK\n> 來源：AWS Lambda\n> 數據回傳成功！`;
             } catch (error) {
-                console.error('Error:', error);
-                debugDiv.innerText = `> 錯誤：${error.message}\n> 請檢查連線或確認 Lambda 程式碼是否已 Deploy。`;
+                console.error('Fetch Error:', error);
+                debugDiv.innerText = `> 錯誤：${error.message}\n> 可能原因：\n> 1. Python 程式碼回傳值未包含 CORS Headers。\n> 2. 瀏覽器安全快取紀錄，請嘗試使用「無痕視窗」開啟。`;
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = '<i class="fa-solid fa-play mr-2"></i> 呼叫 AWS';
