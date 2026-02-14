@@ -213,27 +213,34 @@
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-circle-notch fa-spin mr-2"></i> 計算中...';
             debugDiv.classList.remove('hidden');
-            debugDiv.innerText = "> 正在使用「簡單請求」繞過 CORS 預檢機制...";
+            debugDiv.innerText = "> 正在發送請求至 AWS 伺服器...";
 
+            // 最終版連線邏輯：不帶斜線，不帶多餘 Headers
             const lambdaUrl = "https://p5m47aire4jf7yfjox2natmszq0pzmdy.lambda-url.ap-northeast-1.on.aws"; 
 
             try {
                 const response = await fetch(lambdaUrl, {
                     method: 'POST',
-                    mode: 'cors',
-                    // 將 Content-Type 設為 text/plain 是解決 CORS 最暴力且有效的方法
-                    headers: { 'Content-Type': 'text/plain' },
-                    body: JSON.stringify({ diesel: parseFloat(diesel), power: parseFloat(power) })
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        diesel: parseFloat(diesel),
+                        power: parseFloat(power)
+                    })
                 });
 
-                if (!response.ok) throw new Error(`HTTP 錯誤：${response.status}`);
+                if (!response.ok) {
+                    const errText = await response.text();
+                    throw new Error(`HTTP ${response.status}: ${errText}`);
+                }
+
                 const data = await response.json();
-                
                 resultDiv.innerHTML = `${data.total_tCO2e} <span class="text-sm font-normal">tCO2e</span>`;
-                debugDiv.innerHTML = `> 狀態：${response.status} OK\n> 數據已由 AWS 計算完成回傳。`;
+                debugDiv.innerHTML = `> 狀態：${response.status} OK\n> 數據回傳成功！`;
             } catch (error) {
-                console.error('Fetch Error:', error);
-                debugDiv.innerText = `> 錯誤：${error.message}\n> 請確認：\n> 1. Python 程式碼中 Return 必須包含 "Access-Control-Allow-Origin": "*"\n> 2. Lambda 程式碼修改後是否有按 Deploy？`;
+                console.error('Connection Error:', error);
+                debugDiv.innerText = `> 錯誤：${error.message}\n> 請確認：\n> 1. Lambda 程式碼最後一行的 Return 包含 Access-Control-Allow-Origin。\n> 2. 瀏覽器控制台 (F12) 的 Console 是否有更多紅色錯誤？`;
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = '<i class="fa-solid fa-play mr-2"></i> 呼叫 AWS';
