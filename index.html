@@ -31,47 +31,33 @@
             border: 1px solid rgba(255,255,255,0.2);
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
-        .login-bg {
-            background-image: linear-gradient(135deg, #004d40 0%, #00695c 100%);
-        }
-        .status-dot {
-            height: 8px;
-            width: 8px;
-            background-color: #10B981;
-            border-radius: 50%;
-            display: inline-block;
-            box-shadow: 0 0 5px #10B981;
-        }
+        .login-bg { background-image: linear-gradient(135deg, #004d40 0%, #00695c 100%); }
     </style>
 </head>
 <body class="h-screen overflow-hidden flex flex-col">
 
+    <!-- 登入模組 -->
     <div id="login-modal" class="fixed inset-0 z-50 flex items-center justify-center login-bg">
-        <div class="bg-white rounded-xl shadow-2xl p-8 w-96">
-            <div class="text-center mb-8">
-                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-teal-100 text-teal-800 mb-4">
-                    <i class="fa-solid fa-leaf text-3xl"></i>
-                </div>
-                <h2 class="text-2xl font-bold text-gray-800">智慧碳管理平台</h2>
-                <p class="text-sm text-gray-500 mt-2">AWS 雲端演示環境</p>
+        <div class="bg-white rounded-xl shadow-2xl p-8 w-96 text-center">
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-teal-100 text-teal-800 mb-4">
+                <i class="fa-solid fa-leaf text-3xl"></i>
             </div>
+            <h2 class="text-2xl font-bold text-gray-800">智慧碳管理平台</h2>
+            <p class="text-sm text-gray-500 mt-2 mb-6">AWS 雲端演示環境</p>
             <form onsubmit="handleLogin(event)" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-medium text-gray-700 mb-1">員工編號</label>
-                    <input type="text" id="user-id-input" placeholder="請輸入員編" class="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-teal-500 transition">
-                </div>
+                <input type="text" id="user-id-input" placeholder="請輸入員工編號" class="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-teal-500">
                 <button type="submit" class="w-full bg-teal-700 hover:bg-teal-800 text-white font-medium py-2.5 rounded-lg transition shadow-lg flex justify-center items-center">
-                    <span id="login-btn-text">登入系統</span>
+                    <span id="login-btn-text">進入系統</span>
                     <div id="login-spinner" class="loader ml-2 hidden" style="border-color: #fff; border-top-color: transparent;"></div>
                 </button>
             </form>
-            <div class="mt-4 text-center text-xs text-gray-400">
-                系統託管於 AWS S3 與 Lambda
-            </div>
         </div>
     </div>
 
+    <!-- 主介面佈局 -->
     <div id="main-layout" class="flex-1 flex overflow-hidden hidden opacity-0 transition-opacity duration-500">
+        
+        <!-- 側邊欄 -->
         <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col shadow-xl z-20">
             <div class="h-16 flex items-center px-6 bg-slate-800 border-b border-slate-700">
                 <i class="fa-solid fa-cloud text-teal-400 text-xl mr-3"></i>
@@ -85,7 +71,6 @@
                 <a href="#" onclick="switchTab('carbon-calc')" id="nav-carbon-calc" class="sidebar-item flex items-center px-6 py-3 border-l-4 border-transparent transition-all">
                     <i class="fa-solid fa-calculator w-6"></i>
                     <span class="font-medium">碳排試算引擎</span>
-                    <span class="ml-auto bg-teal-600 text-white text-[10px] px-1.5 py-0.5 rounded">Python</span>
                 </a>
             </nav>
             <div class="p-4 bg-slate-800 border-t border-slate-700">
@@ -93,24 +78,24 @@
                     <div class="w-8 h-8 rounded-full bg-teal-600 flex items-center justify-center text-white font-bold text-xs">Y</div>
                     <div class="ml-3">
                         <p class="text-sm font-medium text-white" id="display-name">殷小可</p>
-                        <p class="text-xs text-slate-400">企業永續部</p>
+                        <p class="text-xs text-slate-400">企業永續部 PM</p>
                     </div>
                 </div>
             </div>
         </aside>
 
+        <!-- 主內容區 -->
         <main class="flex-1 flex flex-col min-w-0 bg-gray-50">
-            <header class="h-16 bg-white shadow-sm border-b border-gray-200 flex items-center justify-between px-8 z-10">
-                <h1 class="text-xl font-bold text-gray-800"><span id="page-title">總覽儀表板</span></h1>
-                <div class="flex items-center space-x-4 text-sm">
-                    <div class="flex items-center text-green-600 bg-green-50 px-3 py-1 rounded-full border border-green-200">
-                        <span class="status-dot mr-2"></span>
-                        <span>AWS Lambda 狀態：就緒</span>
-                    </div>
+            <header class="h-16 bg-white shadow-sm border-b border-gray-200 flex items-center justify-between px-8">
+                <h1 class="text-xl font-bold text-gray-800" id="page-title">總覽儀表板</h1>
+                <div class="text-xs text-green-600 font-bold bg-green-50 px-3 py-1 rounded-full border border-green-200">
+                    AWS Lambda: 就緒
                 </div>
             </header>
 
             <div class="flex-1 overflow-y-auto p-8">
+                
+                <!-- 儀表板視圖 -->
                 <div id="view-dashboard" class="space-y-6">
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div class="glass-card rounded-xl p-6 border-l-4 border-green-500">
@@ -119,57 +104,86 @@
                         </div>
                         <div class="glass-card rounded-xl p-6 border-l-4 border-blue-500">
                             <p class="text-xs font-bold text-gray-500 uppercase">投融資碳排</p>
-                            <p class="text-2xl font-bold text-gray-800 mt-2">85,400 <span class="text-sm font-normal text-gray-500">tCO2e</span></p>
+                            <p class="text-2xl font-bold text-gray-800 mt-2">85,400 <span class="text-sm font-normal text-gray-400">tCO2e</span></p>
                         </div>
                         <div class="glass-card rounded-xl p-6 border-l-4 border-purple-500">
-                            <p class="text-xs font-bold text-gray-500 uppercase">AWS 系統狀態</p>
-                            <p class="text-2xl font-bold text-gray-800 mt-2">連線中</p>
+                            <p class="text-xs font-bold text-gray-500 uppercase">PCAF 覆蓋率</p>
+                            <p class="text-2xl font-bold text-gray-800 mt-2">92.5%</p>
                         </div>
                     </div>
                     <div class="glass-card rounded-xl p-6">
-                        <h3 class="font-bold text-gray-700 mb-4">投融資碳排趨勢</h3>
-                        <div class="h-64">
-                            <canvas id="mainChart"></canvas>
-                        </div>
+                        <h3 class="font-bold text-gray-700 mb-4">年度投融資碳排趨勢</h3>
+                        <div class="h-64"><canvas id="mainChart"></canvas></div>
                     </div>
                 </div>
 
+                <!-- 碳排試算視圖 -->
                 <div id="view-carbon-calc" class="hidden space-y-6">
-                    <div class="glass-card rounded-xl p-6 max-w-2xl mx-auto">
-                        <div class="flex items-center mb-6">
-                            <i class="fa-brands fa-aws text-orange-500 text-3xl mr-3"></i>
-                            <div>
-                                <h3 class="font-bold text-lg text-gray-800">ISO 14064-1 碳排試算引擎</h3>
-                                <p class="text-xs text-gray-500">後端運算由 AWS Lambda 執行</p>
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                            <div>
-                                <label class="block text-xs font-medium text-gray-700 mb-1">柴油使用量</label>
-                                <input type="number" id="input-diesel" class="w-full border p-2 rounded focus:ring-teal-500 outline-none" placeholder="輸入公升數">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-medium text-gray-700 mb-1">外購電力</label>
-                                <input type="number" id="input-power" class="w-full border p-2 rounded focus:ring-teal-500 outline-none" placeholder="輸入度數">
-                                <p class="text-[10px] text-gray-400 mt-1">係數：0.495</p>
-                            </div>
-                        </div>
-                        <div class="bg-gray-50 p-4 rounded-lg flex justify-between items-center border border-gray-200">
-                            <div>
-                                <p class="text-xs text-gray-500">總碳排放量</p>
-                                <div id="result-s12" class="text-2xl font-bold text-gray-800">
-                                    0.00 <span class="text-sm font-normal">tCO2e</span>
+                    <div class="glass-card rounded-xl p-8 max-w-4xl mx-auto">
+                        <h3 class="font-bold text-lg text-gray-800 mb-6 flex items-center">
+                            <i class="fa-brands fa-aws text-orange-500 text-2xl mr-3"></i> ISO 14064-1 企業全方位碳排試算
+                        </h3>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                            <!-- 範疇一 -->
+                            <div class="space-y-4">
+                                <h4 class="text-xs font-bold text-teal-700 uppercase tracking-wider border-b pb-2">範疇一 (直接排放)</h4>
+                                <div>
+                                    <label class="block text-[10px] text-gray-500 mb-1">柴油使用量 (公升)</label>
+                                    <input type="number" id="input-diesel" class="w-full border p-2 rounded outline-none focus:ring-1 focus:ring-teal-500" placeholder="0">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] text-gray-500 mb-1">汽油使用量 (公升)</label>
+                                    <input type="number" id="input-gasoline" class="w-full border p-2 rounded outline-none focus:ring-1 focus:ring-teal-500" placeholder="0">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] text-gray-500 mb-1">天然氣 (立方公尺)</label>
+                                    <input type="number" id="input-gas" class="w-full border p-2 rounded outline-none focus:ring-1 focus:ring-teal-500" placeholder="0">
                                 </div>
                             </div>
-                            <button onclick="calcS12()" id="calc-btn" class="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded text-sm transition shadow-md flex items-center">
-                                <i class="fa-solid fa-play mr-2"></i> 呼叫 AWS
+                            <!-- 範疇二 -->
+                            <div class="space-y-4">
+                                <h4 class="text-xs font-bold text-blue-700 uppercase tracking-wider border-b pb-2">範疇二 (能源間接)</h4>
+                                <div>
+                                    <label class="block text-[10px] text-gray-500 mb-1">外購電力 (度/kWh)</label>
+                                    <input type="number" id="input-power" class="w-full border p-2 rounded outline-none focus:ring-1 focus:ring-blue-500" placeholder="0">
+                                </div>
+                            </div>
+                            <!-- 範疇三 -->
+                            <div class="space-y-4">
+                                <h4 class="text-xs font-bold text-purple-700 uppercase tracking-wider border-b pb-2">範疇三 (其他間接)</h4>
+                                <div>
+                                    <label class="block text-[10px] text-gray-500 mb-1">自來水 (度/m3)</label>
+                                    <input type="number" id="input-water" class="w-full border p-2 rounded outline-none focus:ring-1 focus:ring-purple-500" placeholder="0">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] text-gray-500 mb-1">商務差旅 (公里)</label>
+                                    <input type="number" id="input-travel" class="w-full border p-2 rounded outline-none focus:ring-1 focus:ring-purple-500" placeholder="0">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-50 p-6 rounded-xl border flex flex-col md:flex-row justify-between items-center gap-6">
+                            <div class="flex gap-8 text-center">
+                                <div>
+                                    <p class="text-[10px] text-gray-400 uppercase">總計排放量</p>
+                                    <p id="result-total" class="text-3xl font-bold text-slate-800">0.000 <span class="text-sm font-normal">tCO2e</span></p>
+                                </div>
+                                <div class="hidden md:block border-l h-10 self-center"></div>
+                                <div class="text-left text-[10px] text-gray-500 space-y-1">
+                                    <p>S1: <span id="res-s1">0</span> t</p>
+                                    <p>S2: <span id="res-s2">0</span> t</p>
+                                    <p>S3: <span id="res-s3">0</span> t</p>
+                                </div>
+                            </div>
+                            <button onclick="calcFullCarbon()" id="calc-btn" class="w-full md:w-auto bg-orange-500 hover:bg-orange-600 text-white px-10 py-3 rounded-lg font-bold shadow-lg transition transform active:scale-95">
+                                呼叫 AWS Lambda 運算
                             </button>
                         </div>
-                        <div id="aws-debug" class="hidden mt-4 p-3 bg-black rounded text-green-400 font-mono text-xs overflow-x-auto">
-                            > 等待回傳中...
-                        </div>
+                        <div id="aws-debug" class="hidden mt-4 p-3 bg-black rounded text-green-400 font-mono text-[10px] overflow-x-auto"></div>
                     </div>
                 </div>
+
             </div>
         </main>
     </div>
@@ -177,17 +191,16 @@
     <script>
         function handleLogin(e) {
             e.preventDefault();
-            const userId = document.getElementById('user-id-input').value;
-            if (userId) { document.getElementById('display-name').innerText = userId; }
-            document.getElementById('login-btn-text').innerText = '連線中...';
+            const id = document.getElementById('user-id-input').value;
+            if(id) document.getElementById('display-name').innerText = id;
+            document.getElementById('login-btn-text').innerText = '身分驗證中...';
             document.getElementById('login-spinner').classList.remove('hidden');
             setTimeout(() => {
                 document.getElementById('login-modal').classList.add('hidden');
-                const mainLayout = document.getElementById('main-layout');
-                mainLayout.classList.remove('hidden');
-                setTimeout(() => mainLayout.classList.remove('opacity-0'), 50);
+                document.getElementById('main-layout').classList.remove('hidden');
+                setTimeout(() => document.getElementById('main-layout').classList.remove('opacity-0'), 50);
                 initCharts();
-            }, 1000);
+            }, 800);
         }
 
         function switchTab(tabId) {
@@ -199,67 +212,76 @@
             document.getElementById('view-' + tabId).classList.remove('hidden');
             document.getElementById('nav-' + tabId).classList.add('sidebar-active', 'border-green-400');
             document.getElementById('nav-' + tabId).classList.remove('border-transparent');
-            const titles = {'dashboard': '總覽儀表板', 'carbon-calc': '碳排試算引擎'};
-            document.getElementById('page-title').innerText = titles[tabId];
+            document.getElementById('page-title').innerText = {'dashboard': '總覽儀表板', 'carbon-calc': '碳排試算引擎'}[tabId];
         }
 
-        async function calcS12() {
-            const diesel = document.getElementById('input-diesel').value || 0;
-            const power = document.getElementById('input-power').value || 0;
-            const resultDiv = document.getElementById('result-s12');
-            const debugDiv = document.getElementById('aws-debug');
+        async function calcFullCarbon() {
             const btn = document.getElementById('calc-btn');
+            const debug = document.getElementById('aws-debug');
+            
+            // 收集數據
+            const payload = {
+                diesel: document.getElementById('input-diesel').value || 0,
+                gasoline: document.getElementById('input-gasoline').value || 0,
+                gas: document.getElementById('input-gas').value || 0,
+                power: document.getElementById('input-power').value || 0,
+                water: document.getElementById('input-water').value || 0,
+                travel: document.getElementById('input-travel').value || 0
+            };
 
             btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin mr-2"></i> 計算中...';
-            debugDiv.classList.remove('hidden');
-            debugDiv.innerText = "> 正在發送請求至 AWS 伺服器...";
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> 雲端運算中...';
+            debug.classList.remove('hidden');
+            debug.innerText = "> 發送 6 項指標數據至 AWS Lambda URL...";
 
-            // 最終版連線邏輯：不帶斜線，不帶多餘 Headers
-            const lambdaUrl = "https://p5m47aire4jf7yfjox2natmszq0pzmdy.lambda-url.ap-northeast-1.on.aws"; 
+            const lambdaUrl = "https://p5m47aire4jf7yfjox2natmszq0pzmdy.lambda-url.ap-northeast-1.on.aws";
 
             try {
                 const response = await fetch(lambdaUrl, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        diesel: parseFloat(diesel),
-                        power: parseFloat(power)
-                    })
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
                 });
 
-                if (!response.ok) {
-                    const errText = await response.text();
-                    throw new Error(`HTTP ${response.status}: ${errText}`);
-                }
-
-                const data = await response.json();
-                resultDiv.innerHTML = `${data.total_tCO2e} <span class="text-sm font-normal">tCO2e</span>`;
-                debugDiv.innerHTML = `> 狀態：${response.status} OK\n> 數據回傳成功！`;
-            } catch (error) {
-                console.error('Connection Error:', error);
-                debugDiv.innerText = `> 錯誤：${error.message}\n> 請確認：\n> 1. Lambda 程式碼最後一行的 Return 包含 Access-Control-Allow-Origin。\n> 2. 瀏覽器控制台 (F12) 的 Console 是否有更多紅色錯誤？`;
+                if (!response.ok) throw new Error(`連線失敗: ${response.status}`);
+                const res = await response.json();
+                
+                // 更新 UI
+                document.getElementById('result-total').innerHTML = `${res.data.total_tCO2e} <span class="text-sm font-normal">tCO2e</span>`;
+                document.getElementById('res-s1').innerText = res.data.breakdown.scope1;
+                document.getElementById('res-s2').innerText = res.data.breakdown.scope2;
+                document.getElementById('res-s3').innerText = res.data.breakdown.scope3;
+                
+                debug.innerText = `> 狀態：200 OK\n> 來源：AWS Lambda (V2.0)\n> 回傳數據：${JSON.dumps(res.data.breakdown)}`;
+            } catch (err) {
+                debug.innerText = `> 錯誤：${err.message}\n> 請確認 Lambda 已 Deploy 並設置 CORS。`;
             } finally {
                 btn.disabled = false;
-                btn.innerHTML = '<i class="fa-solid fa-play mr-2"></i> 呼叫 AWS';
+                btn.innerHTML = '呼叫 AWS Lambda 運算';
             }
         }
 
         function initCharts() {
-            new Chart(document.getElementById('mainChart'), {
+            const ctx = document.getElementById('mainChart').getContext('2d');
+            new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: ['2021', '2022', '2023', '2024'],
                     datasets: [{
-                        label: '範疇三碳排量',
+                        label: '全行投融資碳排 (tCO2e)',
                         data: [120000, 115000, 98000, 85400],
                         borderColor: '#00df9a',
+                        backgroundColor: 'rgba(0, 223, 154, 0.1)',
+                        fill: true,
                         tension: 0.4
                     }]
                 },
-                options: { responsive: true, maintainAspectRatio: false }
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: false, grid: { color: '#f0f0f0' } } }
+                }
             });
         }
     </script>
