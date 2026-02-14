@@ -72,13 +72,11 @@
     </div>
 
     <div id="main-layout" class="flex-1 flex overflow-hidden hidden opacity-0 transition-opacity duration-500">
-        
         <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col shadow-xl z-20">
             <div class="h-16 flex items-center px-6 bg-slate-800 border-b border-slate-700">
                 <i class="fa-solid fa-cloud text-teal-400 text-xl mr-3"></i>
                 <span class="font-bold text-white tracking-wide">ESG 數位中台</span>
             </div>
-
             <nav class="flex-1 py-6 space-y-1">
                 <a href="#" onclick="switchTab('dashboard')" id="nav-dashboard" class="sidebar-item sidebar-active flex items-center px-6 py-3 border-l-4 border-green-400 transition-all">
                     <i class="fa-solid fa-chart-pie w-6"></i>
@@ -90,7 +88,6 @@
                     <span class="ml-auto bg-teal-600 text-white text-[10px] px-1.5 py-0.5 rounded">Python</span>
                 </a>
             </nav>
-
             <div class="p-4 bg-slate-800 border-t border-slate-700">
                 <div class="flex items-center">
                     <div class="w-8 h-8 rounded-full bg-teal-600 flex items-center justify-center text-white font-bold text-xs">Y</div>
@@ -114,7 +111,6 @@
             </header>
 
             <div class="flex-1 overflow-y-auto p-8">
-                
                 <div id="view-dashboard" class="space-y-6">
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div class="glass-card rounded-xl p-6 border-l-4 border-green-500">
@@ -130,7 +126,6 @@
                             <p class="text-2xl font-bold text-gray-800 mt-2">連線中</p>
                         </div>
                     </div>
-                    
                     <div class="glass-card rounded-xl p-6">
                         <h3 class="font-bold text-gray-700 mb-4">投融資碳排趨勢</h3>
                         <div class="h-64">
@@ -148,7 +143,6 @@
                                 <p class="text-xs text-gray-500">後端運算由 AWS Lambda 執行</p>
                             </div>
                         </div>
-
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                             <div>
                                 <label class="block text-xs font-medium text-gray-700 mb-1">柴油使用量</label>
@@ -160,7 +154,6 @@
                                 <p class="text-[10px] text-gray-400 mt-1">係數：0.495</p>
                             </div>
                         </div>
-
                         <div class="bg-gray-50 p-4 rounded-lg flex justify-between items-center border border-gray-200">
                             <div>
                                 <p class="text-xs text-gray-500">總碳排放量</p>
@@ -172,13 +165,11 @@
                                 <i class="fa-solid fa-play mr-2"></i> 呼叫 AWS
                             </button>
                         </div>
-
                         <div id="aws-debug" class="hidden mt-4 p-3 bg-black rounded text-green-400 font-mono text-xs overflow-x-auto">
                             > 等待回傳中...
                         </div>
                     </div>
                 </div>
-
             </div>
         </main>
     </div>
@@ -206,7 +197,6 @@
             document.getElementById('view-' + tabId).classList.remove('hidden');
             document.getElementById('nav-' + tabId).classList.add('sidebar-active', 'border-green-400');
             document.getElementById('nav-' + tabId).classList.remove('border-transparent');
-            
             const titles = {'dashboard': '總覽儀表板', 'carbon-calc': '碳排試算引擎'};
             document.getElementById('page-title').innerText = titles[tabId];
         }
@@ -223,36 +213,24 @@
             debugDiv.classList.remove('hidden');
             debugDiv.innerText = "> 正在發送請求至 AWS Lambda...";
 
-            const lambdaUrl = "https://p5m47aire4jf7yfjox2natmszq0pzmdy.lambda-url.ap-northeast-1.on.aws/"; 
-
-            if (!lambdaUrl || lambdaUrl.includes("YOUR_AWS_LAMBDA_URL")) {
-                alert("請於程式碼中設定正確的 AWS Lambda 網址");
-                btn.disabled = false;
-                btn.innerHTML = '<i class="fa-solid fa-play mr-2"></i> 呼叫 AWS';
-                return;
-            }
+            const lambdaUrl = "https://p5m47aire4jf7yfjox2natmszq0pzmdy.lambda-url.ap-northeast-1.on.aws"; 
 
             try {
                 const response = await fetch(lambdaUrl, {
                     method: 'POST',
-                    mode: 'cors',
-                    headers: { 
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ diesel: diesel, power: power })
                 });
 
                 if (!response.ok) throw new Error(`HTTP 錯誤：${response.status}`);
 
                 const data = await response.json();
-                
                 resultDiv.innerHTML = `${data.total_tCO2e} <span class="text-sm font-normal">tCO2e</span>`;
-                
                 debugDiv.innerHTML = `> 狀態：${response.status} OK\n> 來源：AWS Lambda\n> 回傳數據：${JSON.stringify(data)}`;
 
             } catch (error) {
                 console.error('Error:', error);
-                debugDiv.innerText = `> 錯誤：${error.message}\n> 1. 請檢查 AWS Lambda 的 Function URL 是否開啟了 CORS 設定。\n> 2. 確保 Allow Methods 包含 POST 與 OPTIONS。\n> 3. 確保 Allow Headers 包含 content-type。`;
+                debugDiv.innerText = `> 錯誤：${error.message}\n> 請檢查：\n> 1. AWS 設置中 Allow Methods 是否包含 OPTIONS 與 POST。\n> 2. Allow Headers 是否包含 content-type。`;
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = '<i class="fa-solid fa-play mr-2"></i> 呼叫 AWS';
