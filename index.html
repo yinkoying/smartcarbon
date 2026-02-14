@@ -213,18 +213,16 @@
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-circle-notch fa-spin mr-2"></i> 計算中...';
             debugDiv.classList.remove('hidden');
-            debugDiv.innerText = "> 正在向 AWS 進行加密通訊...";
+            debugDiv.innerText = "> 正在使用「簡單請求」繞過 CORS 預檢機制...";
 
-            // 自動修復網址：移除末端斜線並加入快取破除參數
-            let rawUrl = "https://p5m47aire4jf7yfjox2natmszq0pzmdy.lambda-url.ap-northeast-1.on.aws"; 
-            if (rawUrl.endsWith('/')) rawUrl = rawUrl.slice(0, -1);
-            const lambdaUrl = `${rawUrl}?t=${new Date().getTime()}`;
+            const lambdaUrl = "https://p5m47aire4jf7yfjox2natmszq0pzmdy.lambda-url.ap-northeast-1.on.aws"; 
 
             try {
                 const response = await fetch(lambdaUrl, {
                     method: 'POST',
-                    mode: 'cors', // 強制使用 CORS 模式
-                    headers: { 'Content-Type': 'application/json' },
+                    mode: 'cors',
+                    // 將 Content-Type 設為 text/plain 是解決 CORS 最暴力且有效的方法
+                    headers: { 'Content-Type': 'text/plain' },
                     body: JSON.stringify({ diesel: parseFloat(diesel), power: parseFloat(power) })
                 });
 
@@ -232,10 +230,10 @@
                 const data = await response.json();
                 
                 resultDiv.innerHTML = `${data.total_tCO2e} <span class="text-sm font-normal">tCO2e</span>`;
-                debugDiv.innerHTML = `> 狀態：${response.status} OK\n> 來源：AWS Lambda\n> 數據回傳成功！`;
+                debugDiv.innerHTML = `> 狀態：${response.status} OK\n> 數據已由 AWS 計算完成回傳。`;
             } catch (error) {
                 console.error('Fetch Error:', error);
-                debugDiv.innerText = `> 錯誤：${error.message}\n> 可能原因：\n> 1. Python 程式碼回傳值未包含 CORS Headers。\n> 2. 瀏覽器安全快取紀錄，請嘗試使用「無痕視窗」開啟。`;
+                debugDiv.innerText = `> 錯誤：${error.message}\n> 請確認：\n> 1. Python 程式碼中 Return 必須包含 "Access-Control-Allow-Origin": "*"\n> 2. Lambda 程式碼修改後是否有按 Deploy？`;
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = '<i class="fa-solid fa-play mr-2"></i> 呼叫 AWS';
