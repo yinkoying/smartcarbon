@@ -205,7 +205,8 @@
     </div>
 
     <script>
-        // 設定 AWS Lambda Function URL
+        // 【重要】請將下方的 URL 替換為您 AWS Console 上顯示的 Function URL
+        // 範例格式: "https://xxxxxxxxxxxxxxxxxxxx.lambda-url.ap-northeast-1.on.aws"
         const lambdaUrl = "https://p5m47aire4jf7yfjox2natmszq0pzmdy.lambda-url.ap-northeast-1.on.aws"; 
         
         let myChart = null; // 全局變數儲存 Chart 實例
@@ -247,10 +248,10 @@
                 updateStatus('error');
                 // 顯示失敗訊息，但允許進入系統
                 errorMsg.classList.remove('hidden');
-                errorMsg.innerHTML = '<p class="font-bold"><i class="fa-solid fa-triangle-exclamation mr-1"></i> 連線失敗</p><p class="mt-1">已強制進入離線模式。請按 F12 檢查 CORS 設定。</p>';
+                errorMsg.innerHTML = '<p class="font-bold"><i class="fa-solid fa-triangle-exclamation mr-1"></i> 連線失敗</p><p class="mt-1">請檢查：<br>1. 是否已將 AWS Function URL 貼入程式碼？<br>2. Python 代碼是否移除了手動 CORS 標頭？</p>';
                 
                 // 稍微等待讓使用者看到錯誤訊息，然後自動進入
-                await new Promise(r => setTimeout(r, 1500));
+                await new Promise(r => setTimeout(r, 2000));
             } finally {
                 // 無論成功或失敗，都隱藏登入視窗並顯示主介面
                 document.getElementById('login-modal').classList.add('hidden');
@@ -282,12 +283,11 @@
 
         // 核心功能：從後端讀取歷史資料並畫圖
         async function loadHistoryData() {
-            // 發送 GET 請求 (不使用 no-cors 模式，因為我們需要讀取回應內容)
+            // 發送 GET 請求 
+            // 修正：移除 Accept header 以配合您的 AWS Console 設定 (只允許 content-type)
             const response = await fetch(lambdaUrl, { 
-                method: 'GET',
-                headers: {
-                    'Accept': 'application/json'
-                }
+                method: 'GET'
+                // 注意：這裡不加 headers，避免觸發非必要的預檢或被 Allow headers 擋下
             });
             
             if (!response.ok) {
@@ -335,6 +335,7 @@
 
             try {
                 // 發送 POST 請求
+                // Content-Type 是必須的，且已在您的 AWS Console 允許列表中
                 const response = await fetch(lambdaUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -367,7 +368,7 @@
                 console.error("Connection Error:", err);
                 // 針對 CORS 錯誤給予特別提示
                 if (err.message.includes('Failed to fetch')) {
-                    debug.innerText = `> 連線錯誤：瀏覽器擋下了請求。\n> 原因：AWS Lambda Function URL 的 CORS 未設定。\n> 解法：請至 AWS Console > Lambda > Function URL > 編輯 CORS > Allow origin 設為 *`;
+                    debug.innerText = `> 連線錯誤：請求被阻擋。\n> 可能原因：\n1. HTML 中的 lambdaUrl 尚未替換。\n2. Python 代碼回傳了重複的 CORS 標頭。\n3. AWS Console 的 CORS 設定未生效 (請稍等幾秒)。`;
                 } else {
                     debug.innerText = `> 失敗：${err.message}\n> 請檢查 AWS Lambda 日誌。`;
                 }
