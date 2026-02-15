@@ -43,7 +43,7 @@
                 <i class="fa-solid fa-leaf text-3xl"></i>
             </div>
             <h2 class="text-2xl font-bold text-gray-800">智慧碳管理平台</h2>
-            <p class="text-sm text-gray-500 mt-2 mb-6">AWS 雲端演示環境 (連線 DynamoDB)</p>
+            <p class="text-sm text-gray-500 mt-2 mb-6">AWS 雲端直連環境 (Real-time)</p>
             <form onsubmit="handleLogin(event)" class="space-y-4">
                 <input type="text" id="user-id-input" placeholder="請輸入員工編號" class="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-teal-500">
                 <button type="submit" id="login-btn" class="w-full bg-teal-700 hover:bg-teal-800 text-white font-medium py-2.5 rounded-lg transition shadow-lg flex justify-center items-center">
@@ -51,6 +51,11 @@
                     <div id="login-spinner" class="loader ml-2 hidden" style="border-color: #fff; border-top-color: transparent;"></div>
                 </button>
             </form>
+            <!-- 連線診斷提示 (動態顯示) -->
+            <div id="connection-error-msg" class="hidden mt-4 text-xs text-red-500 bg-red-50 p-2 rounded border border-red-200 text-left">
+                <p class="font-bold"><i class="fa-solid fa-triangle-exclamation mr-1"></i> AWS 連線失敗</p>
+                <p class="mt-1">系統將以離線狀態啟動。請檢查 Lambda Function URL CORS 設定。</p>
+            </div>
         </div>
     </div>
 
@@ -92,8 +97,8 @@
                     <button onclick="loadHistoryData()" class="text-gray-400 hover:text-teal-600 transition" title="重新整理數據">
                         <i class="fa-solid fa-rotate-right"></i>
                     </button>
-                    <div class="text-xs text-green-600 font-bold bg-green-50 px-3 py-1 rounded-full border border-green-200">
-                        AWS Lambda: 連線中
+                    <div id="aws-status-badge" class="text-xs text-gray-500 font-bold bg-gray-100 px-3 py-1 rounded-full border border-gray-200 flex items-center gap-1">
+                        <div class="w-2 h-2 rounded-full bg-gray-400"></div> AWS 狀態未定
                     </div>
                 </div>
             </header>
@@ -111,7 +116,7 @@
                             <p class="text-xs font-bold text-gray-500 uppercase">歷史累計投融資碳排</p>
                             <!-- 這個 ID 用於 JS 更新累計數值 -->
                             <p id="total-emissions-display" class="text-2xl font-bold text-gray-800 mt-2">
-                                0 <span class="text-sm font-normal text-gray-400">tCO2e</span>
+                                - <span class="text-sm font-normal text-gray-400">tCO2e</span>
                             </p>
                         </div>
                         <div class="glass-card rounded-xl p-6 border-l-4 border-purple-500">
@@ -201,12 +206,25 @@
 
     <script>
         // 設定 AWS Lambda Function URL
-        // 請確保此 URL 對應到已更新為 V4.0 (支援 GET/POST) 的 Lambda 函數
         const lambdaUrl = "https://p5m47aire4jf7yfjox2natmszq0pzmdy.lambda-url.ap-northeast-1.on.aws"; 
         
         let myChart = null; // 全局變數儲存 Chart 實例
 
-        function handleLogin(e) {
+        function updateStatus(status) {
+            const badge = document.getElementById('aws-status-badge');
+            if (status === 'connected') {
+                badge.className = "text-xs text-green-600 font-bold bg-green-50 px-3 py-1 rounded-full border border-green-200 flex items-center gap-1";
+                badge.innerHTML = '<div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div> AWS 連線成功';
+            } else if (status === 'error') {
+                badge.className = "text-xs text-red-600 font-bold bg-red-50 px-3 py-1 rounded-full border border-red-200 flex items-center gap-1";
+                badge.innerHTML = '<div class="w-2 h-2 rounded-full bg-red-500"></div> 連線失敗';
+            } else {
+                badge.className = "text-xs text-gray-500 font-bold bg-gray-100 px-3 py-1 rounded-full border border-gray-200 flex items-center gap-1";
+                badge.innerHTML = '<div class="w-2 h-2 rounded-full bg-gray-400"></div> AWS 狀態未定';
+            }
+        }
+
+        async function handleLogin(e) {
             e.preventDefault();
             const id = document.getElementById('user-id-input').value;
             if(id) document.getElementById('display-name').innerText = id;
@@ -214,22 +232,36 @@
             // UI 狀態更新
             const btnText = document.getElementById('login-btn-text');
             const spinner = document.getElementById('login-spinner');
-            btnText.innerText = '同步歷史資料中...';
-            spinner.classList.remove('hidden');
+            const errorMsg = document.getElementById('connection-error-msg');
             
-            // 登入時同時載入歷史數據
-            loadHistoryData().then(() => {
-                // 資料載入完成後切換畫面
+            btnText.innerText = '正在連接 AWS DynamoDB...';
+            spinner.classList.remove('hidden');
+            errorMsg.classList.add('hidden');
+            
+            try {
+                // 嘗試真實連線
+                await loadHistoryData();
+                updateStatus('connected');
+            } catch (err) {
+                console.error("Login failed (network/CORS):", err);
+                updateStatus('error');
+                // 顯示失敗訊息，但允許進入系統
+                errorMsg.classList.remove('hidden');
+                errorMsg.innerHTML = '<p class="font-bold"><i class="fa-solid fa-triangle-exclamation mr-1"></i> 連線失敗</p><p class="mt-1">已強制進入離線模式。請按 F12 檢查 CORS 設定。</p>';
+                
+                // 稍微等待讓使用者看到錯誤訊息，然後自動進入
+                await new Promise(r => setTimeout(r, 1500));
+            } finally {
+                // 無論成功或失敗，都隱藏登入視窗並顯示主介面
                 document.getElementById('login-modal').classList.add('hidden');
                 document.getElementById('main-layout').classList.remove('hidden');
                 setTimeout(() => document.getElementById('main-layout').classList.remove('opacity-0'), 50);
-            }).catch(err => {
-                console.error("Login data sync failed", err);
-                // 即使失敗也允許進入，顯示空圖表
-                document.getElementById('login-modal').classList.add('hidden');
-                document.getElementById('main-layout').classList.remove('hidden');
-                setTimeout(() => document.getElementById('main-layout').classList.remove('opacity-0'), 50);
-            });
+                
+                // 如果失敗導致沒有圖表，初始化一個空圖表
+                if (!myChart) {
+                    renderChart([], []);
+                }
+            }
         }
 
         function switchTab(tabId) {
@@ -243,7 +275,6 @@
             document.getElementById('nav-' + tabId).classList.remove('border-transparent');
             document.getElementById('page-title').innerText = {'dashboard': '總覽儀表板', 'carbon-calc': '碳排試算引擎'}[tabId];
             
-            // 如果切換回儀表板，重新渲染一下圖表確保大小正確
             if(tabId === 'dashboard' && myChart) {
                 myChart.resize();
             }
@@ -251,40 +282,35 @@
 
         // 核心功能：從後端讀取歷史資料並畫圖
         async function loadHistoryData() {
-            try {
-                // 發送 GET 請求
-                const response = await fetch(lambdaUrl, { method: 'GET' });
-                const res = await response.json();
-                
-                if(res.status === 'success') {
-                    const records = res.data; // 預期這是一個陣列
-                    
-                    if (records.length === 0) {
-                        renderChart([], []);
-                        document.getElementById('total-emissions-display').innerHTML = `0 <span class="text-sm font-normal text-gray-400">tCO2e (尚無紀錄)</span>`;
-                        return;
-                    }
-
-                    // 準備圖表數據 (處理時間字串，只取 HH:mm 或 日期)
-                    const labels = records.map(item => {
-                        // 簡單處理時間顯示，取日期+時間的前半段
-                        return item.timestamp.substring(5, 16); // e.g., "05-20 14:30"
-                    });
-                    const dataPoints = records.map(item => item.total_tCO2e);
-                    
-                    // 計算總歷史排放量 (更新儀表板數字)
-                    // 注意：API 回傳可能是字串或數字，統一轉 float
-                    const totalSum = dataPoints.reduce((a, b) => parseFloat(a) + parseFloat(b), 0).toFixed(2);
-                    
-                    // 更新儀表板上的「歷史累計」卡片
-                    document.getElementById('total-emissions-display').innerHTML = `${totalSum} <span class="text-sm font-normal text-gray-400">tCO2e (累計)</span>`;
-
-                    renderChart(labels, dataPoints);
+            // 發送 GET 請求 (不使用 no-cors 模式，因為我們需要讀取回應內容)
+            const response = await fetch(lambdaUrl, { 
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json'
                 }
-            } catch(e) {
-                console.error("無法載入歷史資料", e);
-                // 失敗時使用預設空圖表
-                renderChart(['無資料'], [0]);
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP Error: ${response.status}`);
+            }
+
+            const res = await response.json();
+            
+            if(res.status === 'success') {
+                const records = res.data;
+                
+                if (records.length === 0) {
+                    renderChart([], []);
+                    document.getElementById('total-emissions-display').innerHTML = `0 <span class="text-sm font-normal text-gray-400">tCO2e (尚無紀錄)</span>`;
+                    return;
+                }
+
+                const labels = records.map(item => item.timestamp.substring(5, 16));
+                const dataPoints = records.map(item => item.total_tCO2e);
+                const totalSum = dataPoints.reduce((a, b) => parseFloat(a) + parseFloat(b), 0).toFixed(2);
+                
+                document.getElementById('total-emissions-display').innerHTML = `${totalSum} <span class="text-sm font-normal text-gray-400">tCO2e (累計)</span>`;
+                renderChart(labels, dataPoints);
             }
         }
 
@@ -293,7 +319,6 @@
             const btn = document.getElementById('calc-btn');
             const debug = document.getElementById('aws-debug');
             
-            // 蒐集表單數據
             const payload = {
                 diesel: parseFloat(document.getElementById('input-diesel').value) || 0,
                 gasoline: parseFloat(document.getElementById('input-gasoline').value) || 0,
@@ -303,7 +328,6 @@
                 travel: parseFloat(document.getElementById('input-travel').value) || 0
             };
 
-            // UI Loading 狀態
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> 雲端運算與存檔中...';
             debug.classList.remove('hidden');
@@ -320,11 +344,9 @@
                 if (!response.ok) throw new Error(`HTTP 錯誤: ${response.status}`);
                 const res = await response.json();
                 
-                // 解析回傳資料
                 const data = res.data;
-                const breakdown = data.breakdown || {}; // 防止 undefined
+                const breakdown = data.breakdown || {};
 
-                // 更新「本次計算結果」區域
                 document.getElementById('result-total').innerHTML = `${data.total_tCO2e} <span class="text-sm font-normal">tCO2e</span>`;
                 document.getElementById('res-s1').innerText = breakdown.scope1;
                 document.getElementById('res-s2').innerText = breakdown.scope2;
@@ -332,10 +354,9 @@
                 
                 debug.innerText = `> 成功！資料已寫入資料庫。\n> Record ID: ${data.record_id}\n> 時間: ${data.timestamp}`;
 
-                // 計算成功後，重新抓取最新的歷史資料來更新圖表
                 await loadHistoryData();
+                updateStatus('connected');
                 
-                // 稍微延遲後自動切換回儀表板，讓使用者看到新趨勢
                 setTimeout(() => {
                     if(confirm("計算完成！資料已存入雲端數據庫。\n是否切換至儀表板查看最新趨勢圖？")) {
                         switchTab('dashboard');
@@ -344,18 +365,22 @@
 
             } catch (err) {
                 console.error("Connection Error:", err);
-                debug.innerText = `> 失敗：${err.message}\n> 請檢查 AWS Lambda 日誌或權限設定。`;
+                // 針對 CORS 錯誤給予特別提示
+                if (err.message.includes('Failed to fetch')) {
+                    debug.innerText = `> 連線錯誤：瀏覽器擋下了請求。\n> 原因：AWS Lambda Function URL 的 CORS 未設定。\n> 解法：請至 AWS Console > Lambda > Function URL > 編輯 CORS > Allow origin 設為 *`;
+                } else {
+                    debug.innerText = `> 失敗：${err.message}\n> 請檢查 AWS Lambda 日誌。`;
+                }
+                updateStatus('error');
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = '呼叫 AWS Lambda 運算';
             }
         }
 
-        // 繪製圖表函數
         function renderChart(labels, data) {
             const ctx = document.getElementById('mainChart').getContext('2d');
             
-            // 如果圖表已存在，先銷毀舊的以避免重疊
             if (myChart) {
                 myChart.destroy();
             }
@@ -367,11 +392,11 @@
                     datasets: [{
                         label: '碳排放紀錄 (tCO2e)',
                         data: data,
-                        borderColor: '#00df9a', // 主色調 Teal
-                        backgroundColor: 'rgba(0, 223, 154, 0.1)', // 填充色
+                        borderColor: '#00df9a',
+                        backgroundColor: 'rgba(0, 223, 154, 0.1)',
                         borderWidth: 2,
                         fill: true,
-                        tension: 0.4, // 平滑曲線
+                        tension: 0.4,
                         pointBackgroundColor: '#004d40',
                         pointBorderColor: '#fff',
                         pointHoverBackgroundColor: '#fff',
