@@ -10,12 +10,14 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Noto Sans TC', sans-serif; background-color: #f0f2f5; }
+        
         .sidebar-active { 
             background: linear-gradient(90deg, rgba(0,77,64,1) 0%, rgba(0,105,92,1) 100%); 
             border-left: 4px solid #00df9a; 
             box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
         }
         .sidebar-item:hover { background-color: rgba(255,255,255,0.1); }
+        
         .loader {
             border: 3px solid #f3f3f3;
             border-top: 3px solid #009688;
@@ -25,44 +27,88 @@
             animation: spin 1s linear infinite;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
         .glass-card {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255,255,255,0.2);
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
+        
         .login-bg { background-image: linear-gradient(135deg, #004d40 0%, #00695c 100%); }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        .animate-float {
+            animation: float 3s ease-in-out infinite;
+        }
+        .mascot-shadow {
+            filter: drop-shadow(0 5px 10px rgba(0,0,0,0.2));
+        }
+        
+        @keyframes popIn {
+            0% { opacity: 0; transform: translate(-50%, 10px) scale(0.9); }
+            100% { opacity: 1; transform: translate(-50%, 0) scale(1); }
+        }
+        .speech-bubble-enter {
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        @keyframes slideInUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .guide-bubble-anim {
+            animation: slideInUp 0.3s ease-out forwards;
+        }
     </style>
 </head>
 <body class="h-screen overflow-hidden flex flex-col">
 
-    <!-- 登入模組 -->
-    <div id="login-modal" class="fixed inset-0 z-50 flex items-center justify-center login-bg">
-        <div class="bg-white rounded-xl shadow-2xl p-8 w-96 text-center">
-            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-teal-100 text-teal-800 mb-4">
-                <i class="fa-solid fa-leaf text-3xl"></i>
+    <div id="login-modal" class="fixed inset-0 z-50 flex flex-col items-center justify-center login-bg">
+        
+        <div class="relative w-40 h-40 mb-[-30px] z-10 animate-float cursor-pointer group" onclick="changeMascotText()">
+            
+            <div id="mascot-speech" class="absolute -top-24 left-1/2 transform -translate-x-1/2 w-48 bg-white text-teal-900 text-sm font-bold p-3 rounded-2xl shadow-xl border-2 border-teal-400 speech-bubble-enter text-center z-20">
+                <span id="mascot-text">嗨！我是碳吉 🌱<br><span class="text-xs text-gray-500 font-normal">您的 ESG 智慧小幫手</span></span>
+                <div class="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-4 h-4 bg-white border-b-2 border-r-2 border-teal-400 rotate-45"></div>
             </div>
-            <h2 class="text-2xl font-bold text-gray-800">智慧碳管理平台</h2>
-            <p class="text-sm text-gray-500 mt-2 mb-6">AWS 雲端直連環境 (Real-time)</p>
-            <form onsubmit="handleLogin(event)" class="space-y-4">
-                <input type="text" id="user-id-input" placeholder="請輸入員工編號" class="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-teal-500">
-                <button type="submit" id="login-btn" class="w-full bg-teal-700 hover:bg-teal-800 text-white font-medium py-2.5 rounded-lg transition shadow-lg flex justify-center items-center">
+
+            <img src="https://raw.githubusercontent.com/tanji2026/ccus/main/tanjibaby.png" 
+                 alt="碳吉吉祥物" 
+                 class="w-full h-full object-contain mascot-shadow transition-transform duration-300 group-hover:scale-110 rounded-full">
+        </div>
+
+        <div class="bg-white rounded-xl shadow-2xl p-8 w-96 text-center pt-12 relative z-0">
+            <div class="absolute top-4 right-4 text-teal-100/50">
+                <i class="fa-solid fa-leaf text-6xl transform rotate-12"></i>
+            </div>
+
+            <h2 class="text-2xl font-bold text-gray-800 relative z-10">智慧碳管理平台</h2>
+            <p class="text-sm text-gray-500 mt-2 mb-6 relative z-10">AWS 雲端直連環境 (Real-time)</p>
+            
+            <form onsubmit="handleLogin(event)" class="space-y-4 relative z-10">
+                <input type="text" id="user-id-input" placeholder="請輸入員工編號" class="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-teal-500 transition-all">
+                <button type="submit" id="login-btn" class="w-full bg-teal-700 hover:bg-teal-800 text-white font-medium py-2.5 rounded-lg transition shadow-lg flex justify-center items-center group">
                     <span id="login-btn-text">進入系統</span>
+                    <i class="fa-solid fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
                     <div id="login-spinner" class="loader ml-2 hidden" style="border-color: #fff; border-top-color: transparent;"></div>
                 </button>
             </form>
-            <!-- 連線診斷提示 (動態顯示) -->
-            <div id="connection-error-msg" class="hidden mt-4 text-xs text-red-500 bg-red-50 p-2 rounded border border-red-200 text-left">
+
+            <div id="connection-error-msg" class="hidden mt-4 text-xs text-red-500 bg-red-50 p-2 rounded border border-red-200 text-left relative z-10">
                 <p class="font-bold"><i class="fa-solid fa-triangle-exclamation mr-1"></i> AWS 連線失敗</p>
                 <p class="mt-1">系統將以離線狀態啟動。請檢查 Lambda Function URL CORS 設定。</p>
             </div>
         </div>
+        
+        <div class="mt-6 text-teal-200/60 text-xs font-mono">Powered by AWS Lambda & DynamoDB</div>
     </div>
 
-    <!-- 主介面佈局 -->
-    <div id="main-layout" class="flex-1 flex overflow-hidden hidden opacity-0 transition-opacity duration-500">
+    <div id="main-layout" class="flex-1 flex overflow-hidden hidden opacity-0 transition-opacity duration-500 relative">
         
-        <!-- 側邊欄 -->
         <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col shadow-xl z-20">
             <div class="h-16 flex items-center px-6 bg-slate-800 border-b border-slate-700">
                 <i class="fa-solid fa-cloud text-teal-400 text-xl mr-3"></i>
@@ -89,8 +135,7 @@
             </div>
         </aside>
 
-        <!-- 主內容區 -->
-        <main class="flex-1 flex flex-col min-w-0 bg-gray-50">
+        <main class="flex-1 flex flex-col min-w-0 bg-gray-50 relative">
             <header class="h-16 bg-white shadow-sm border-b border-gray-200 flex items-center justify-between px-8">
                 <h1 class="text-xl font-bold text-gray-800" id="page-title">總覽儀表板</h1>
                 <div class="flex items-center gap-2">
@@ -103,9 +148,8 @@
                 </div>
             </header>
 
-            <div class="flex-1 overflow-y-auto p-8">
+            <div class="flex-1 overflow-y-auto p-8 pb-32"> 
                 
-                <!-- 儀表板視圖 -->
                 <div id="view-dashboard" class="space-y-6">
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div class="glass-card rounded-xl p-6 border-l-4 border-green-500">
@@ -114,7 +158,6 @@
                         </div>
                         <div class="glass-card rounded-xl p-6 border-l-4 border-blue-500">
                             <p class="text-xs font-bold text-gray-500 uppercase">歷史累計投融資碳排</p>
-                            <!-- 這個 ID 用於 JS 更新累計數值 -->
                             <p id="total-emissions-display" class="text-2xl font-bold text-gray-800 mt-2">
                                 - <span class="text-sm font-normal text-gray-400">tCO2e</span>
                             </p>
@@ -133,7 +176,6 @@
                     </div>
                 </div>
 
-                <!-- 碳排試算視圖 -->
                 <div id="view-carbon-calc" class="hidden space-y-6">
                     <div class="glass-card rounded-xl p-8 max-w-4xl mx-auto">
                         <h3 class="font-bold text-lg text-gray-800 mb-6 flex items-center">
@@ -141,7 +183,6 @@
                         </h3>
                         
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                            <!-- 範疇一 -->
                             <div class="space-y-4">
                                 <h4 class="text-xs font-bold text-teal-700 uppercase tracking-wider border-b pb-2">範疇一 (直接排放)</h4>
                                 <div>
@@ -157,7 +198,6 @@
                                     <input type="number" id="input-gas" class="w-full border p-2 rounded outline-none focus:ring-1 focus:ring-teal-500" placeholder="0">
                                 </div>
                             </div>
-                            <!-- 範疇二 -->
                             <div class="space-y-4">
                                 <h4 class="text-xs font-bold text-blue-700 uppercase tracking-wider border-b pb-2">範疇二 (能源間接)</h4>
                                 <div>
@@ -165,7 +205,6 @@
                                     <input type="number" id="input-power" class="w-full border p-2 rounded outline-none focus:ring-1 focus:ring-blue-500" placeholder="0">
                                 </div>
                             </div>
-                            <!-- 範疇三 -->
                             <div class="space-y-4">
                                 <h4 class="text-xs font-bold text-purple-700 uppercase tracking-wider border-b pb-2">範疇三 (其他間接)</h4>
                                 <div>
@@ -201,15 +240,97 @@
                 </div>
 
             </div>
+
+            <div id="guide-mascot" class="fixed bottom-6 right-6 z-50 flex flex-col items-end">
+                <div id="guide-bubble" class="bg-white border-2 border-teal-500 rounded-2xl p-4 shadow-xl mb-2 w-64 hidden relative guide-bubble-anim">
+                    <button onclick="toggleGuideBubble()" class="absolute top-2 right-2 text-gray-400 hover:text-gray-600">
+                        <i class="fa-solid fa-times"></i>
+                    </button>
+                    <h4 class="font-bold text-teal-700 mb-1 flex items-center">
+                        <i class="fa-solid fa-lightbulb text-yellow-400 mr-2"></i> 碳吉小教室
+                    </h4>
+                    <p id="guide-text" class="text-sm text-gray-600 leading-relaxed my-2">歡迎使用！點擊左側選單可以切換「儀表板」與「試算引擎」喔！</p>
+                    <div class="mt-3 flex justify-between items-center pt-2 border-t border-gray-100">
+                        <span class="text-xs text-gray-400 font-mono" id="guide-step">1/4</span>
+                        <button onclick="nextGuideStep()" class="text-xs bg-teal-50 text-teal-700 px-3 py-1.5 rounded-lg hover:bg-teal-100 font-bold transition-colors">
+                            下一步 <i class="fa-solid fa-chevron-right text-[10px] ml-1"></i>
+                        </button>
+                    </div>
+                    <div class="absolute -bottom-2 right-8 w-4 h-4 bg-white border-b-2 border-r-2 border-teal-500 rotate-45"></div>
+                </div>
+                
+                <div onclick="toggleGuideBubble()" class="w-16 h-16 cursor-pointer animate-float hover:scale-110 transition-transform relative group">
+                    <img src="https://raw.githubusercontent.com/tanji2026/ccus/main/tanjibaby.png" 
+                         class="w-full h-full object-contain filter drop-shadow-lg rounded-full" alt="召喚碳吉">
+                    <span class="absolute top-0 right-0 flex h-3 w-3">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+                    </span>
+                    <div class="absolute right-full mr-2 top-1/2 -translate-y-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                        點我召喚說明
+                    </div>
+                </div>
+            </div>
+
         </main>
     </div>
 
     <script>
-        // 【重要】請將下方的 URL 替換為您 AWS Console 上顯示的 Function URL
-        // 範例格式: "https://xxxxxxxxxxxxxxxxxxxx.lambda-url.ap-northeast-1.on.aws"
         const lambdaUrl = "https://p5m47aire4jf7yfjox2natmszq0pzmdy.lambda-url.ap-northeast-1.on.aws"; 
         
-        let myChart = null; // 全局變數儲存 Chart 實例
+        let myChart = null; 
+        
+        const mascotMessages = [
+            '嗨！我是碳吉 🌱<br><span class="text-xs text-gray-500 font-normal">您的 ESG 智慧小幫手</span>',
+            '準備好拯救地球了嗎？<br><span class="text-xs text-gray-500 font-normal">讓我們開始碳管理吧！</span>',
+            '今天也要努力減碳喔！<br><span class="text-xs text-gray-500 font-normal">每一個數據都很重要</span>',
+            '登入即可連接 AWS 雲端<br><span class="text-xs text-gray-500 font-normal">即時同步您的碳排數據</span>'
+        ];
+        let currentMsgIndex = 0;
+
+        function changeMascotText() {
+            currentMsgIndex = (currentMsgIndex + 1) % mascotMessages.length;
+            const bubble = document.getElementById('mascot-text');
+            const bubbleContainer = document.getElementById('mascot-speech');
+            
+            bubbleContainer.style.opacity = '0';
+            setTimeout(() => {
+                bubble.innerHTML = mascotMessages[currentMsgIndex];
+                bubbleContainer.style.opacity = '1';
+                bubbleContainer.classList.remove('speech-bubble-enter');
+                void bubbleContainer.offsetWidth; 
+                bubbleContainer.classList.add('speech-bubble-enter');
+            }, 200);
+        }
+
+        const guideSteps = [
+            "歡迎使用！點擊左側選單可以切換「儀表板」與「試算引擎」查看不同功能。",
+            "在「碳排試算引擎」中，輸入範疇一、二、三的各項能源使用數據。",
+            "輸入完畢後，點擊「呼叫 AWS Lambda」按鈕，即可進行雲端運算並存檔。",
+            "運算完成後，回到「總覽儀表板」即可查看最新的即時碳排趨勢圖！"
+        ];
+        let currentStep = 0;
+
+        function toggleGuideBubble() {
+            const bubble = document.getElementById('guide-bubble');
+            if (bubble.classList.contains('hidden')) {
+                bubble.classList.remove('hidden');
+                currentStep = 0;
+                updateGuideContent();
+            } else {
+                bubble.classList.add('hidden');
+            }
+        }
+
+        function nextGuideStep() {
+            currentStep = (currentStep + 1) % guideSteps.length;
+            updateGuideContent();
+        }
+
+        function updateGuideContent() {
+            document.getElementById('guide-text').innerText = guideSteps[currentStep];
+            document.getElementById('guide-step').innerText = `${currentStep + 1}/${guideSteps.length}`;
+        }
 
         function updateStatus(status) {
             const badge = document.getElementById('aws-status-badge');
@@ -230,7 +351,6 @@
             const id = document.getElementById('user-id-input').value;
             if(id) document.getElementById('display-name').innerText = id;
             
-            // UI 狀態更新
             const btnText = document.getElementById('login-btn-text');
             const spinner = document.getElementById('login-spinner');
             const errorMsg = document.getElementById('connection-error-msg');
@@ -240,25 +360,19 @@
             errorMsg.classList.add('hidden');
             
             try {
-                // 嘗試真實連線
                 await loadHistoryData();
                 updateStatus('connected');
             } catch (err) {
                 console.error("Login failed (network/CORS):", err);
                 updateStatus('error');
-                // 顯示失敗訊息，但允許進入系統
                 errorMsg.classList.remove('hidden');
-                errorMsg.innerHTML = '<p class="font-bold"><i class="fa-solid fa-triangle-exclamation mr-1"></i> 連線失敗</p><p class="mt-1">請檢查：<br>1. 是否已將 AWS Function URL 貼入程式碼？<br>2. Python 代碼是否移除了手動 CORS 標頭？</p>';
-                
-                // 稍微等待讓使用者看到錯誤訊息，然後自動進入
-                await new Promise(r => setTimeout(r, 2000));
+                errorMsg.innerHTML = '<p class="font-bold"><i class="fa-solid fa-triangle-exclamation mr-1"></i> 連線失敗</p><p class="mt-1">請檢查：<br>1. AWS Function URL 是否正確？<br>2. Lambda CORS 是否允許此網域？</p>';
+                await new Promise(r => setTimeout(r, 1500));
             } finally {
-                // 無論成功或失敗，都隱藏登入視窗並顯示主介面
                 document.getElementById('login-modal').classList.add('hidden');
                 document.getElementById('main-layout').classList.remove('hidden');
                 setTimeout(() => document.getElementById('main-layout').classList.remove('opacity-0'), 50);
                 
-                // 如果失敗導致沒有圖表，初始化一個空圖表
                 if (!myChart) {
                     renderChart([], []);
                 }
@@ -281,14 +395,8 @@
             }
         }
 
-        // 核心功能：從後端讀取歷史資料並畫圖
         async function loadHistoryData() {
-            // 發送 GET 請求 
-            // 修正：移除 Accept header 以配合您的 AWS Console 設定 (只允許 content-type)
-            const response = await fetch(lambdaUrl, { 
-                method: 'GET'
-                // 注意：這裡不加 headers，避免觸發非必要的預檢或被 Allow headers 擋下
-            });
+            const response = await fetch(lambdaUrl, { method: 'GET' });
             
             if (!response.ok) {
                 throw new Error(`HTTP Error: ${response.status}`);
@@ -314,7 +422,6 @@
             }
         }
 
-        // 核心功能：計算碳排並存檔
         async function calcFullCarbon() {
             const btn = document.getElementById('calc-btn');
             const debug = document.getElementById('aws-debug');
@@ -334,8 +441,6 @@
             debug.innerText = "> 正在傳送至 AWS Lambda (寫入 DynamoDB)...";
 
             try {
-                // 發送 POST 請求
-                // Content-Type 是必須的，且已在您的 AWS Console 允許列表中
                 const response = await fetch(lambdaUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -366,9 +471,8 @@
 
             } catch (err) {
                 console.error("Connection Error:", err);
-                // 針對 CORS 錯誤給予特別提示
                 if (err.message.includes('Failed to fetch')) {
-                    debug.innerText = `> 連線錯誤：請求被阻擋。\n> 可能原因：\n1. HTML 中的 lambdaUrl 尚未替換。\n2. Python 代碼回傳了重複的 CORS 標頭。\n3. AWS Console 的 CORS 設定未生效 (請稍等幾秒)。`;
+                    debug.innerText = `> 連線錯誤：請求被阻擋。\n> 可能原因：\n1. Lambda URL 錯誤或未設定。\n2. 您的瀏覽器阻擋了跨域請求 (CORS)。\n3. AWS Lambda 未正確回傳 CORS Header。`;
                 } else {
                     debug.innerText = `> 失敗：${err.message}\n> 請檢查 AWS Lambda 日誌。`;
                 }
