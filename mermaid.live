@@ -1,0 +1,43 @@
+graph TD
+    %% 定義樣式顏色
+    classDef client fill:#e3f2fd,stroke:#1565c0,stroke-width:2px,color:black;
+    classDef cloud fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,color:black;
+    classDef logic fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:black;
+    classDef data fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:black;
+
+    %% 1. 用戶端環境
+    subgraph Client_Zone [用戶端環境]
+        Browser[("使用者瀏覽器<br>HTML5 / Tailwind / JS")]:::client
+    end
+
+    %% 2. 公有雲環境
+    subgraph AWS_Cloud [AWS 公有雲環境]
+        
+        %% 安全層
+        subgraph Security_Layer [安全接入層]
+            FunctionURL[("AWS 函數網址<br>HTTPS / CORS")]:::cloud
+        end
+
+        %% 業務邏輯層
+        subgraph Business_Logic_Layer [業務邏輯層]
+            Lambda[("AWS Lambda<br>核心運算引擎 (Python)")]:::logic
+            Calc_Module["碳排計算模組<br>ISO 14064-1"]:::logic
+            Export_Module["報表匯出模組<br>CSV 生成器"]:::logic
+        end
+
+        %% 數據存取層
+        subgraph Data_Layer [數據存取層]
+            DynamoDB[("AWS DynamoDB<br>碳排紀錄資料表")]:::data
+        end
+
+    end
+
+    %% 3. 資料流向連線
+    Browser -- "1. 發送請求 (計算/查詢)" --> FunctionURL
+    FunctionURL -- "2. 觸發事件" --> Lambda
+    Lambda -- "3. 引用" --> Calc_Module
+    Lambda -- "4. 引用" --> Export_Module
+    Calc_Module -- "5. 寫入/讀取" --> DynamoDB
+    Export_Module -- "6. 掃描數據" --> DynamoDB
+    DynamoDB -- "7. 回傳 JSON 資料" --> Lambda
+    Lambda -- "8. 回傳回應 (JSON/CSV)" --> Browser
