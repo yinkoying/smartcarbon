@@ -572,7 +572,8 @@
                         ${r.breakdown?.scope1} / ${r.breakdown?.scope2} / ${r.breakdown?.scope3}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <button onclick="deleteRecord('${r.record_id}')" class="text-red-600 hover:text-red-900 hover:underline">
+                        <!-- 修正重點：傳入 timestamp 給刪除函式 -->
+                        <button onclick="deleteRecord('${r.record_id}', '${r.timestamp}')" class="text-red-600 hover:text-red-900 hover:underline">
                             <i class="fa-solid fa-trash-can mr-1"></i> 刪除
                         </button>
                     </td>
@@ -581,7 +582,7 @@
             });
         }
         
-        async function deleteRecord(recordId) {
+        async function deleteRecord(recordId, timestamp) {
             if(!confirm("確定要刪除此筆盤查紀錄嗎？刪除後無法復原。")) return;
             
             const btn = (window.event && window.event.target) ? window.event.target.closest('button') : null;
@@ -593,13 +594,14 @@
                 btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 刪除中...';
             }
             
-            console.log("Attempting to delete record:", recordId);
+            console.log("Attempting to delete record:", recordId, "Timestamp:", timestamp);
 
             try {
                 const response = await fetch(lambdaUrl, {
                     method: 'DELETE',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ record_id: recordId })
+                    // 修正重點：Body 必須同時包含 record_id 和 timestamp
+                    body: JSON.stringify({ record_id: recordId, timestamp: timestamp })
                 });
                 
                 if(!response.ok) {
