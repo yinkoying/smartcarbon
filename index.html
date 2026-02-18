@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>企業綠色融資暨智慧碳管理平台 - 企業級模擬系統</title>
+    <title>企業綠色融資暨智慧碳管理平台</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -81,13 +81,13 @@
                  class="w-full h-full object-contain mascot-shadow transition-transform duration-300 group-hover:scale-110 rounded-full">
         </div>
 
-        <div class="bg-white rounded-xl shadow-2xl p-8 w-96 text-center pt-12 relative z-0">
+        <div class="bg-white rounded-xl shadow-2xl p-8 w-[480px] text-center pt-12 relative z-0">
             <div class="absolute top-4 right-4 text-teal-100/50">
                 <i class="fa-solid fa-leaf text-6xl transform rotate-12"></i>
             </div>
 
-            <h2 class="text-2xl font-bold text-gray-800 relative z-10">智慧碳管理平台</h2>
-            <p class="text-sm text-gray-500 mt-2 mb-6 relative z-10">AWS 雲端直連環境 (Real-time)</p>
+            <h2 class="text-2xl font-bold text-gray-800 relative z-10">企業綠色融資暨智慧碳管理平台</h2>
+            <p class="text-sm text-gray-500 mt-2 mb-6 relative z-10 font-mono">Enterprise-grade Simulation System (PoC)</p>
             
             <form onsubmit="handleLogin(event)" class="space-y-4 relative z-10">
                 <input type="text" id="user-id-input" placeholder="請輸入員工編號" class="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-teal-500 transition-all">
@@ -104,24 +104,51 @@
             </div>
         </div>
         
-        <div class="mt-6 text-teal-200/60 text-xs font-mono">Powered by AWS Lambda & DynamoDB</div>
+        <div class="mt-8 text-center space-y-2">
+            <div class="text-teal-200/60 text-xs font-mono">Powered by AWS Lambda & DynamoDB</div>
+            <div class="text-teal-200/40 text-[10px] bg-black/20 px-3 py-1 rounded-full">
+                <i class="fa-solid fa-flask mr-1"></i> 本平台目前為系統架構設計課程之 PoC 模擬展示環境
+            </div>
+        </div>
     </div>
 
     <div id="main-layout" class="flex-1 flex overflow-hidden hidden opacity-0 transition-opacity duration-500 relative">
         
-        <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col shadow-xl z-20">
+        <aside class="w-72 bg-slate-900 text-slate-300 flex flex-col shadow-xl z-20">
             <div class="h-16 flex items-center px-6 bg-slate-800 border-b border-slate-700">
-                <i class="fa-solid fa-cloud text-teal-400 text-xl mr-3"></i>
-                <span class="font-bold text-white tracking-wide">ESG 數位中台</span>
+                <i class="fa-solid fa-cloud text-teal-400 text-lg mr-2"></i>
+                <span class="font-bold text-white text-sm tracking-wide">綠色融資暨碳管理平台</span>
             </div>
-            <nav class="flex-1 py-6 space-y-1">
+            <nav class="flex-1 py-6 space-y-1 overflow-y-auto">
                 <a href="#" onclick="switchTab('dashboard')" id="nav-dashboard" class="sidebar-item sidebar-active flex items-center px-6 py-3 border-l-4 border-green-400 transition-all">
-                    <i class="fa-solid fa-chart-pie w-6"></i>
-                    <span class="font-medium">總覽儀表板</span>
+                    <i class="fa-solid fa-chart-pie w-5 mr-3 text-center"></i>
+                    <span class="font-medium text-sm">總覽儀表板</span>
                 </a>
                 <a href="#" onclick="switchTab('carbon-calc')" id="nav-carbon-calc" class="sidebar-item flex items-center px-6 py-3 border-l-4 border-transparent transition-all">
-                    <i class="fa-solid fa-calculator w-6"></i>
-                    <span class="font-medium">碳排試算引擎</span>
+                    <i class="fa-solid fa-calculator w-5 mr-3 text-center"></i>
+                    <span class="font-medium text-sm">碳排試算引擎</span>
+                </a>
+                
+                <div class="px-6 py-2 mt-4 text-xs font-bold text-slate-500 uppercase tracking-wider">數據管理</div>
+                
+                <a href="#" onclick="switchTab('inventory')" id="nav-inventory" class="sidebar-item flex items-center px-6 py-3 border-l-4 border-transparent transition-all hover:bg-slate-800 hover:text-white">
+                    <i class="fa-solid fa-list-check w-5 mr-3 text-center"></i>
+                    <span class="font-medium text-sm">盤查清冊管理</span>
+                </a>
+                <a href="#" class="sidebar-item flex items-center px-6 py-3 border-l-4 border-transparent opacity-60 cursor-not-allowed" title="權限不足">
+                    <i class="fa-solid fa-truck-fast w-5 mr-3 text-center"></i>
+                    <span class="font-medium text-sm">供應鏈碳排數據</span>
+                </a>
+
+                <div class="px-6 py-2 mt-4 text-xs font-bold text-slate-500 uppercase tracking-wider">融資與合規</div>
+
+                <a href="#" class="sidebar-item flex items-center px-6 py-3 border-l-4 border-transparent opacity-60 cursor-not-allowed" title="權限不足">
+                    <i class="fa-solid fa-bullseye w-5 mr-3 text-center"></i>
+                    <span class="font-medium text-sm">減碳目標追蹤</span>
+                </a>
+                <a href="#" class="sidebar-item flex items-center px-6 py-3 border-l-4 border-transparent opacity-60 cursor-not-allowed" title="權限不足">
+                    <i class="fa-solid fa-file-contract w-5 mr-3 text-center"></i>
+                    <span class="font-medium text-sm">稽核報告下載</span>
                 </a>
             </nav>
             <div class="p-4 bg-slate-800 border-t border-slate-700">
@@ -137,9 +164,16 @@
 
         <main class="flex-1 flex flex-col min-w-0 bg-gray-50 relative">
             <header class="h-16 bg-white shadow-sm border-b border-gray-200 flex items-center justify-between px-8">
-                <h1 class="text-xl font-bold text-gray-800" id="page-title">總覽儀表板</h1>
-                <div class="flex items-center gap-2">
-                    <button onclick="loadHistoryData()" class="text-gray-400 hover:text-teal-600 transition" title="重新整理數據">
+                <div class="flex items-center gap-3">
+                    <h1 class="text-xl font-bold text-gray-800" id="page-title">總覽儀表板</h1>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button onclick="exportCSV()" class="flex items-center gap-2 px-3 py-1.5 bg-white border border-gray-300 text-gray-600 text-sm font-medium rounded hover:bg-gray-50 transition shadow-sm">
+                        <i class="fa-solid fa-file-csv text-green-600"></i>
+                        匯出融資審查用報表
+                    </button>
+                    <div class="h-6 w-px bg-gray-300 mx-1"></div>
+                    <button onclick="loadHistoryData()" class="text-gray-400 hover:text-teal-600 transition p-2" title="重新整理數據">
                         <i class="fa-solid fa-rotate-right"></i>
                     </button>
                     <div id="aws-status-badge" class="text-xs text-gray-500 font-bold bg-gray-100 px-3 py-1 rounded-full border border-gray-200 flex items-center gap-1">
@@ -169,8 +203,8 @@
                     </div>
                     <div class="glass-card rounded-xl p-6">
                         <div class="flex justify-between items-center mb-4">
-                            <h3 class="font-bold text-gray-700">企業碳排放歷史趨勢 (AWS DynamoDB 實時數據)</h3>
-                            <span class="text-xs text-gray-400">最近 10 筆計算紀錄</span>
+                            <h3 class="font-bold text-gray-700">企業碳排放歷史趨勢</h3>
+                            <span class="text-xs text-gray-400">AWS DynamoDB 實時數據</span>
                         </div>
                         <div class="h-64"><canvas id="mainChart"></canvas></div>
                     </div>
@@ -178,35 +212,65 @@
 
                 <div id="view-carbon-calc" class="hidden space-y-6">
                     <div class="glass-card rounded-xl p-8 max-w-4xl mx-auto">
-                        <h3 class="font-bold text-lg text-gray-800 mb-6 flex items-center">
+                        <h3 class="font-bold text-lg text-gray-800 mb-2 flex items-center">
                             <i class="fa-brands fa-aws text-orange-500 text-2xl mr-3"></i> ISO 14064-1 企業全方位碳排試算
                         </h3>
                         
+                        <div class="mb-6 bg-gray-50 p-3 rounded-lg border border-gray-200 flex items-center gap-3">
+                            <label class="text-sm font-bold text-gray-700 whitespace-nowrap">行業別設定：</label>
+                            <select id="industry-select" class="flex-1 p-2 border border-gray-300 rounded text-sm text-gray-700 focus:ring-2 focus:ring-teal-500 outline-none bg-white" disabled>
+                                <option value="C" selected>C 大類 - 製造業</option>
+                            </select>
+                            <span class="text-xs text-orange-500 font-medium px-2 py-1 bg-orange-100 rounded">
+                                <i class="fa-solid fa-lock mr-1"></i> 模擬鎖定
+                            </span>
+                        </div>
+                        
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                             <div class="space-y-4">
-                                <h4 class="text-xs font-bold text-teal-700 uppercase tracking-wider border-b pb-2">範疇一 (直接排放)</h4>
+                                <h4 class="text-xs font-bold text-teal-700 uppercase tracking-wider border-b pb-2">
+                                    <i class="fa-solid fa-fire mr-1"></i> 範疇一 (直接排放)
+                                </h4>
                                 <div>
-                                    <label class="block text-[10px] text-gray-500 mb-1">柴油使用量 (公升)</label>
+                                    <label class="block text-[10px] text-gray-500 mb-1">重油/燃料油 (公升) <span class="text-orange-400">*鍋爐</span></label>
+                                    <input type="number" id="input-heavy-oil" class="w-full border p-2 rounded outline-none focus:ring-1 focus:ring-teal-500 bg-gray-50" placeholder="0">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] text-gray-500 mb-1">固定源天然氣 (立方公尺)</label>
+                                    <input type="number" id="input-gas" class="w-full border p-2 rounded outline-none focus:ring-1 focus:ring-teal-500" placeholder="0">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] text-gray-500 mb-1">柴油使用量 (公升) <span class="text-gray-400">*推高機/車隊</span></label>
                                     <input type="number" id="input-diesel" class="w-full border p-2 rounded outline-none focus:ring-1 focus:ring-teal-500" placeholder="0">
                                 </div>
                                 <div>
-                                    <label class="block text-[10px] text-gray-500 mb-1">汽油使用量 (公升)</label>
+                                    <label class="block text-[10px] text-gray-500 mb-1">汽油使用量 (公升) <span class="text-gray-400">*公務車</span></label>
                                     <input type="number" id="input-gasoline" class="w-full border p-2 rounded outline-none focus:ring-1 focus:ring-teal-500" placeholder="0">
                                 </div>
                                 <div>
-                                    <label class="block text-[10px] text-gray-500 mb-1">天然氣 (立方公尺)</label>
-                                    <input type="number" id="input-gas" class="w-full border p-2 rounded outline-none focus:ring-1 focus:ring-teal-500" placeholder="0">
+                                    <label class="block text-[10px] text-gray-500 mb-1">冷媒逸散 (公斤) <span class="text-orange-400">*R-410A等</span></label>
+                                    <input type="number" id="input-refrigerant" class="w-full border p-2 rounded outline-none focus:ring-1 focus:ring-teal-500 bg-gray-50" placeholder="0">
                                 </div>
                             </div>
+
                             <div class="space-y-4">
-                                <h4 class="text-xs font-bold text-blue-700 uppercase tracking-wider border-b pb-2">範疇二 (能源間接)</h4>
+                                <h4 class="text-xs font-bold text-blue-700 uppercase tracking-wider border-b pb-2">
+                                    <i class="fa-solid fa-bolt mr-1"></i> 範疇二 (能源間接)
+                                </h4>
                                 <div>
                                     <label class="block text-[10px] text-gray-500 mb-1">外購電力 (度/kWh)</label>
                                     <input type="number" id="input-power" class="w-full border p-2 rounded outline-none focus:ring-1 focus:ring-blue-500" placeholder="0">
                                 </div>
                             </div>
+
                             <div class="space-y-4">
-                                <h4 class="text-xs font-bold text-purple-700 uppercase tracking-wider border-b pb-2">範疇三 (其他間接)</h4>
+                                <h4 class="text-xs font-bold text-purple-700 uppercase tracking-wider border-b pb-2">
+                                    <i class="fa-solid fa-truck-ramp-box mr-1"></i> 範疇三 (其他間接)
+                                </h4>
+                                <div>
+                                    <label class="block text-[10px] text-gray-500 mb-1">事業廢棄物 (公噸)</label>
+                                    <input type="number" id="input-waste" class="w-full border p-2 rounded outline-none focus:ring-1 focus:ring-purple-500 bg-gray-50" placeholder="0">
+                                </div>
                                 <div>
                                     <label class="block text-[10px] text-gray-500 mb-1">自來水 (度/m3)</label>
                                     <input type="number" id="input-water" class="w-full border p-2 rounded outline-none focus:ring-1 focus:ring-purple-500" placeholder="0">
@@ -239,6 +303,36 @@
                     </div>
                 </div>
 
+                <div id="view-inventory" class="hidden space-y-6">
+                    <div class="glass-card rounded-xl p-8">
+                        <h3 class="font-bold text-lg text-gray-800 mb-6 flex items-center">
+                            <i class="fa-solid fa-database text-teal-600 mr-3"></i> 歷史盤查清冊管理 (AWS DynamoDB)
+                        </h3>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">時間戳記</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">產業類別</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">總碳排 (tCO2e)</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">範疇佔比 (S1/S2/S3)</th>
+                                        <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="inventory-table-body" class="bg-white divide-y divide-gray-200">
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="inventory-loading" class="text-center py-10 hidden">
+                             <div class="loader mx-auto mb-2"></div>
+                             <p class="text-sm text-gray-500">正在讀取資料庫...</p>
+                        </div>
+                        <div id="inventory-empty" class="text-center py-10 hidden">
+                             <p class="text-sm text-gray-500">目前尚無盤查資料。</p>
+                        </div>
+                    </div>
+                </div>
+
             </div>
 
             <div id="guide-mascot" class="fixed bottom-6 right-6 z-50 flex flex-col items-end">
@@ -249,7 +343,7 @@
                     <h4 class="font-bold text-teal-700 mb-1 flex items-center">
                         <i class="fa-solid fa-lightbulb text-yellow-400 mr-2"></i> 碳吉小教室
                     </h4>
-                    <p id="guide-text" class="text-sm text-gray-600 leading-relaxed my-2">歡迎使用！點擊左側選單可以切換「儀表板」與「試算引擎」喔！</p>
+                    <p id="guide-text" class="text-sm text-gray-600 leading-relaxed my-2">歡迎使用！目前為製造業模擬模式，請嘗試輸入數據。</p>
                     <div class="mt-3 flex justify-between items-center pt-2 border-t border-gray-100">
                         <span class="text-xs text-gray-400 font-mono" id="guide-step">1/4</span>
                         <button onclick="nextGuideStep()" class="text-xs bg-teal-50 text-teal-700 px-3 py-1.5 rounded-lg hover:bg-teal-100 font-bold transition-colors">
@@ -262,10 +356,6 @@
                 <div onclick="toggleGuideBubble()" class="w-16 h-16 cursor-pointer animate-float hover:scale-110 transition-transform relative group">
                     <img src="https://raw.githubusercontent.com/tanji2026/ccus/main/tanjibaby.png" 
                          class="w-full h-full object-contain filter drop-shadow-lg rounded-full" alt="召喚碳吉">
-                    <span class="absolute top-0 right-0 flex h-3 w-3">
-                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
-                    </span>
                     <div class="absolute right-full mr-2 top-1/2 -translate-y-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
                         點我召喚說明
                     </div>
@@ -279,12 +369,13 @@
         const lambdaUrl = "https://p5m47aire4jf7yfjox2natmszq0pzmdy.lambda-url.ap-northeast-1.on.aws"; 
         
         let myChart = null; 
+        let currentRecords = [];
         
         const mascotMessages = [
             '嗨！我是碳吉 🌱<br><span class="text-xs text-gray-500 font-normal">您的 ESG 智慧小幫手</span>',
-            '準備好拯救地球了嗎？<br><span class="text-xs text-gray-500 font-normal">讓我們開始碳管理吧！</span>',
+            '目前是製造業模式喔！<br><span class="text-xs text-gray-500 font-normal">記得輸入鍋爐與冷媒數據</span>',
             '今天也要努力減碳喔！<br><span class="text-xs text-gray-500 font-normal">每一個數據都很重要</span>',
-            '登入即可連接 AWS 雲端<br><span class="text-xs text-gray-500 font-normal">即時同步您的碳排數據</span>'
+            '這是一個模擬環境 (PoC)<br><span class="text-xs text-gray-500 font-normal">放心測試，不會影響真實數據</span>'
         ];
         let currentMsgIndex = 0;
 
@@ -304,10 +395,10 @@
         }
 
         const guideSteps = [
-            "歡迎使用！點擊左側選單可以切換「儀表板」與「試算引擎」查看不同功能。",
-            "在「碳排試算引擎」中，輸入範疇一、二、三的各項能源使用數據。",
-            "輸入完畢後，點擊「呼叫 AWS Lambda」按鈕，即可進行雲端運算並存檔。",
-            "運算完成後，回到「總覽儀表板」即可查看最新的即時碳排趨勢圖！"
+            "歡迎使用！這是專為「製造業」設計的模擬環境，您可以在此體驗 ISO 14064-1 盤查流程。",
+            "在「碳排試算引擎」中，我們新增了「重油」與「冷媒」等製造業關鍵排放源。",
+            "輸入數據後，點擊「呼叫 AWS Lambda」，系統會模擬計算並回傳該產業的碳排結果。",
+            "您可以進入「盤查清冊管理」查看或刪除歷史紀錄，或點擊右上角匯出報表。"
         ];
         let currentStep = 0;
 
@@ -380,18 +471,34 @@
         }
 
         function switchTab(tabId) {
-            ['dashboard', 'carbon-calc'].forEach(id => {
-                document.getElementById('view-' + id).classList.add('hidden');
-                document.getElementById('nav-' + id).classList.remove('sidebar-active', 'border-green-400');
-                document.getElementById('nav-' + id).classList.add('border-transparent');
+            ['dashboard', 'carbon-calc', 'inventory'].forEach(id => {
+                const view = document.getElementById('view-' + id);
+                if(view) view.classList.add('hidden');
+                
+                const nav = document.getElementById('nav-' + id);
+                if(nav) {
+                    nav.classList.remove('sidebar-active', 'border-green-400');
+                    nav.classList.add('border-transparent');
+                }
             });
-            document.getElementById('view-' + tabId).classList.remove('hidden');
-            document.getElementById('nav-' + tabId).classList.add('sidebar-active', 'border-green-400');
-            document.getElementById('nav-' + tabId).classList.remove('border-transparent');
-            document.getElementById('page-title').innerText = {'dashboard': '總覽儀表板', 'carbon-calc': '碳排試算引擎'}[tabId];
+            
+            const targetView = document.getElementById('view-' + tabId);
+            if(targetView) targetView.classList.remove('hidden');
+            
+            const targetNav = document.getElementById('nav-' + tabId);
+            if(targetNav) {
+                targetNav.classList.add('sidebar-active', 'border-green-400');
+                targetNav.classList.remove('border-transparent');
+            }
+            
+            const titles = {'dashboard': '總覽儀表板', 'carbon-calc': '碳排試算引擎', 'inventory': '盤查清冊管理'};
+            document.getElementById('page-title').innerText = titles[tabId];
             
             if(tabId === 'dashboard' && myChart) {
                 myChart.resize();
+            }
+            if(tabId === 'inventory') {
+                renderInventoryTable();
             }
         }
 
@@ -405,6 +512,7 @@
             const res = await response.json();
             
             if(res.status === 'success') {
+                currentRecords = res.data;
                 const records = res.data;
                 
                 if (records.length === 0) {
@@ -421,16 +529,114 @@
                 renderChart(labels, dataPoints);
             }
         }
+        
+        function renderInventoryTable() {
+            const tbody = document.getElementById('inventory-table-body');
+            tbody.innerHTML = '';
+            
+            if (!currentRecords || currentRecords.length === 0) {
+                document.getElementById('inventory-empty').classList.remove('hidden');
+                return;
+            } else {
+                document.getElementById('inventory-empty').classList.add('hidden');
+            }
+            
+            currentRecords.forEach(r => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-gray-50 transition-colors";
+                tr.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-mono">${r.timestamp.substring(0, 19).replace('T', ' ')}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">製造業 (C)</span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">${r.total_tCO2e}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        ${r.breakdown?.scope1} / ${r.breakdown?.scope2} / ${r.breakdown?.scope3}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <button onclick="deleteRecord('${r.record_id}')" class="text-red-600 hover:text-red-900 hover:underline">
+                            <i class="fa-solid fa-trash-can mr-1"></i> 刪除
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+        
+        async function deleteRecord(recordId) {
+            if(!confirm("確定要刪除此筆盤查紀錄嗎？刪除後無法復原。")) return;
+            
+            const btn = event.target.closest('button');
+            const originalContent = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 刪除中...';
+            
+            try {
+                const response = await fetch(lambdaUrl, {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ record_id: recordId })
+                });
+                
+                if(!response.ok) throw new Error("Delete failed");
+                
+                await loadHistoryData();
+                renderInventoryTable();
+                
+            } catch(e) {
+                alert("刪除失敗：" + e.message);
+                btn.innerHTML = originalContent;
+                btn.disabled = false;
+            }
+        }
+
+        function exportCSV() {
+            if (!currentRecords || currentRecords.length === 0) {
+                alert("目前沒有數據可供匯出！");
+                return;
+            }
+
+            const headers = ["紀錄ID", "時間戳記", "產業類別", "總碳排(tCO2e)", "範疇一(t)", "範疇二(t)", "範疇三(t)"];
+            const rows = currentRecords.map(r => [
+                r.record_id,
+                r.timestamp,
+                "製造業 (C)",
+                r.total_tCO2e,
+                r.breakdown?.scope1 || 0,
+                r.breakdown?.scope2 || 0,
+                r.breakdown?.scope3 || 0
+            ]);
+
+            let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
+            csvContent += headers.join(",") + "\n";
+            rows.forEach(row => {
+                csvContent += row.join(",") + "\n";
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `green_finance_audit_${new Date().toISOString().slice(0,10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
 
         async function calcFullCarbon() {
             const btn = document.getElementById('calc-btn');
             const debug = document.getElementById('aws-debug');
             
             const payload = {
+                industry: "manufacturing", 
+                heavy_oil: parseFloat(document.getElementById('input-heavy-oil').value) || 0, 
+                gas: parseFloat(document.getElementById('input-gas').value) || 0,
                 diesel: parseFloat(document.getElementById('input-diesel').value) || 0,
                 gasoline: parseFloat(document.getElementById('input-gasoline').value) || 0,
-                gas: parseFloat(document.getElementById('input-gas').value) || 0,
+                refrigerant: parseFloat(document.getElementById('input-refrigerant').value) || 0, 
+                
                 power: parseFloat(document.getElementById('input-power').value) || 0,
+                
+                waste: parseFloat(document.getElementById('input-waste').value) || 0, 
                 water: parseFloat(document.getElementById('input-water').value) || 0,
                 travel: parseFloat(document.getElementById('input-travel').value) || 0
             };
@@ -438,7 +644,7 @@
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> 雲端運算與存檔中...';
             debug.classList.remove('hidden');
-            debug.innerText = "> 正在傳送至 AWS Lambda (寫入 DynamoDB)...";
+            debug.innerText = `> 正在傳送至 AWS Lambda...\n> 行業別: 製造業 (Manufacturing)\n> Payload: ${JSON.stringify(payload)}`;
 
             try {
                 const response = await fetch(lambdaUrl, {
@@ -458,7 +664,7 @@
                 document.getElementById('res-s2').innerText = breakdown.scope2;
                 document.getElementById('res-s3').innerText = breakdown.scope3;
                 
-                debug.innerText = `> 成功！資料已寫入資料庫。\n> Record ID: ${data.record_id}\n> 時間: ${data.timestamp}`;
+                debug.innerText = `> 成功！資料已寫入資料庫。\n> Record ID: ${data.record_id}\n> 時間: ${data.timestamp}\n> 模擬計算結果已回傳。`;
 
                 await loadHistoryData();
                 updateStatus('connected');
