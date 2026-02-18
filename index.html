@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
@@ -311,7 +311,7 @@
                             <table class="min-w-full divide-y divide-gray-200">
                                 <thead class="bg-gray-50">
                                     <tr>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">時間戳記</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">時間戳記 (台灣時間)</th>
                                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">產業類別</th>
                                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">總碳排 (tCO2e)</th>
                                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">範疇佔比 (S1/S2/S3)</th>
@@ -520,6 +520,23 @@
             }
         }
 
+        // 新增：將 UTC 時間字串轉為台灣時間格式
+        function toTaiwanTime(isoString) {
+            if (!isoString) return '-';
+            // 若字串無 'Z' 結尾，補上 'Z' 強制視為 UTC，再轉為 Asia/Taipei
+            const date = new Date(isoString.endsWith('Z') ? isoString : isoString + 'Z');
+            return date.toLocaleString('zh-TW', { 
+                timeZone: 'Asia/Taipei', 
+                hour12: false,
+                year: 'numeric', 
+                month: '2-digit', 
+                day: '2-digit', 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                second: '2-digit'
+            }).replace(/\//g, '-'); // 將斜線替換為短橫線，更符合習慣
+        }
+
         async function loadHistoryData() {
             const response = await fetch(lambdaUrl, { method: 'GET' });
             
@@ -539,7 +556,19 @@
                     return;
                 }
 
-                const labels = records.map(item => item.timestamp.substring(5, 16));
+                // 修正：圖表標籤使用台灣時間
+                const labels = records.map(item => {
+                    const d = new Date(item.timestamp.endsWith('Z') ? item.timestamp : item.timestamp + 'Z');
+                    return d.toLocaleString('zh-TW', { 
+                        timeZone: 'Asia/Taipei', 
+                        month: '2-digit', 
+                        day: '2-digit', 
+                        hour: '2-digit', 
+                        minute: '2-digit', 
+                        hour12: false 
+                    });
+                });
+                
                 const dataPoints = records.map(item => item.total_tCO2e);
                 const totalSum = dataPoints.reduce((a, b) => parseFloat(a) + parseFloat(b), 0).toFixed(2);
                 
@@ -563,7 +592,7 @@
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-gray-50 transition-colors";
                 tr.innerHTML = `
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-mono">${r.timestamp.substring(0, 19).replace('T', ' ')}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-mono">${toTaiwanTime(r.timestamp)}</td>
                     <td class="px-6 py-4 whitespace-nowrap">
                         <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">製造業 (C)</span>
                     </td>
@@ -638,7 +667,7 @@
             const headers = ["紀錄ID", "時間戳記", "產業類別", "總碳排(tCO2e)", "範疇一(t)", "範疇二(t)", "範疇三(t)"];
             const rows = currentRecords.map(r => [
                 r.record_id,
-                r.timestamp,
+                toTaiwanTime(r.timestamp), // 匯出報表也轉為台灣時間
                 "製造業 (C)",
                 r.total_tCO2e,
                 r.breakdown?.scope1 || 0,
@@ -703,7 +732,8 @@
                 document.getElementById('res-s2').innerText = breakdown.scope2;
                 document.getElementById('res-s3').innerText = breakdown.scope3;
                 
-                debug.innerText = `> 成功！資料已寫入資料庫。\n> Record ID: ${data.record_id}\n> 時間: ${data.timestamp}\n> 模擬計算結果已回傳。`;
+                // 修正：除錯訊息顯示台灣時間
+                debug.innerText = `> 成功！資料已寫入資料庫。\n> Record ID: ${data.record_id}\n> 時間: ${toTaiwanTime(data.timestamp)}\n> 模擬計算結果已回傳。`;
 
                 await loadHistoryData();
                 updateStatus('connected');
