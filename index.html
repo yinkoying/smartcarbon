@@ -584,11 +584,17 @@
         async function deleteRecord(recordId) {
             if(!confirm("確定要刪除此筆盤查紀錄嗎？刪除後無法復原。")) return;
             
-            const btn = event.target.closest('button');
-            const originalContent = btn.innerHTML;
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 刪除中...';
+            const btn = (window.event && window.event.target) ? window.event.target.closest('button') : null;
+            let originalContent = '';
             
+            if (btn) {
+                originalContent = btn.innerHTML;
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 刪除中...';
+            }
+            
+            console.log("Attempting to delete record:", recordId);
+
             try {
                 const response = await fetch(lambdaUrl, {
                     method: 'DELETE',
@@ -596,15 +602,28 @@
                     body: JSON.stringify({ record_id: recordId })
                 });
                 
-                if(!response.ok) throw new Error("Delete failed");
+                if(!response.ok) {
+                    const errText = await response.text();
+                    throw new Error(`伺服器回應錯誤 (${response.status}): ${errText}`);
+                }
                 
+                const result = await response.json();
+                console.log("Delete result:", result);
+
                 await loadHistoryData();
-                renderInventoryTable();
+                
+                if(!document.getElementById('view-inventory').classList.contains('hidden')) {
+                    renderInventoryTable();
+                }
                 
             } catch(e) {
-                alert("刪除失敗：" + e.message);
-                btn.innerHTML = originalContent;
-                btn.disabled = false;
+                console.error("Delete error:", e);
+                alert("刪除失敗：\n" + e.message + "\n\n請檢查 AWS Lambda 日誌或 CORS 設定。");
+                
+                if(btn) {
+                    btn.innerHTML = originalContent;
+                    btn.disabled = false;
+                }
             }
         }
 
