@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
@@ -99,7 +99,6 @@
             </form>
 
             <div id="connection-error-msg" class="hidden mt-4 text-xs text-red-500 bg-red-50 p-2 rounded border border-red-200 text-left relative z-10">
-                <!-- 錯誤訊息會由 JS 動態插入 -->
             </div>
         </div>
         
@@ -365,8 +364,6 @@
     </div>
 
     <script>
-        // TODO: 請務必替換為您自己的 AWS Lambda Function URL
-        // 若使用無效的範例 URL，連線將會失敗
         const lambdaUrl = "https://p5m47aire4jf7yfjox2natmszq0pzmdy.lambda-url.ap-northeast-1.on.aws"; 
         
         let myChart = null; 
@@ -468,10 +465,6 @@
                                       <p class="mt-2 text-[10px] text-gray-400">目前嘗試連線至：<br>${lambdaUrl}</p>`;
                 await new Promise(r => setTimeout(r, 1500));
             } finally {
-                // Remove the login modal regardless of success for debugging purposes if needed, 
-                // OR typically keep it if failed. But user might want to see the UI.
-                // Let's keep the logic: if failed, stay on login to show error.
-                // If success:
                 const statusBadge = document.getElementById('aws-status-badge');
                 if (statusBadge.innerText.includes('連線成功')) {
                     document.getElementById('login-modal').classList.add('hidden');
@@ -520,10 +513,8 @@
             }
         }
 
-        // 新增：將 UTC 時間字串轉為台灣時間格式
         function toTaiwanTime(isoString) {
             if (!isoString) return '-';
-            // 若字串無 'Z' 結尾，補上 'Z' 強制視為 UTC，再轉為 Asia/Taipei
             const date = new Date(isoString.endsWith('Z') ? isoString : isoString + 'Z');
             return date.toLocaleString('zh-TW', { 
                 timeZone: 'Asia/Taipei', 
@@ -534,7 +525,7 @@
                 hour: '2-digit', 
                 minute: '2-digit', 
                 second: '2-digit'
-            }).replace(/\//g, '-'); // 將斜線替換為短橫線，更符合習慣
+            }).replace(/\//g, '-');
         }
 
         async function loadHistoryData() {
@@ -556,8 +547,9 @@
                     return;
                 }
 
-                // 修正：圖表標籤使用台灣時間
-                const labels = records.map(item => {
+                const chartRecords = [...records].reverse();
+
+                const labels = chartRecords.map(item => {
                     const d = new Date(item.timestamp.endsWith('Z') ? item.timestamp : item.timestamp + 'Z');
                     return d.toLocaleString('zh-TW', { 
                         timeZone: 'Asia/Taipei', 
@@ -569,7 +561,7 @@
                     });
                 });
                 
-                const dataPoints = records.map(item => item.total_tCO2e);
+                const dataPoints = chartRecords.map(item => item.total_tCO2e);
                 const totalSum = dataPoints.reduce((a, b) => parseFloat(a) + parseFloat(b), 0).toFixed(2);
                 
                 document.getElementById('total-emissions-display').innerHTML = `${totalSum} <span class="text-sm font-normal text-gray-400">tCO2e (累計)</span>`;
@@ -601,7 +593,6 @@
                         ${r.breakdown?.scope1} / ${r.breakdown?.scope2} / ${r.breakdown?.scope3}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <!-- 修正重點：傳入 timestamp 給刪除函式 -->
                         <button onclick="deleteRecord('${r.record_id}', '${r.timestamp}')" class="text-red-600 hover:text-red-900 hover:underline">
                             <i class="fa-solid fa-trash-can mr-1"></i> 刪除
                         </button>
@@ -629,7 +620,6 @@
                 const response = await fetch(lambdaUrl, {
                     method: 'DELETE',
                     headers: { 'Content-Type': 'application/json' },
-                    // 修正重點：Body 必須同時包含 record_id 和 timestamp
                     body: JSON.stringify({ record_id: recordId, timestamp: timestamp })
                 });
                 
@@ -667,7 +657,7 @@
             const headers = ["紀錄ID", "時間戳記", "產業類別", "總碳排(tCO2e)", "範疇一(t)", "範疇二(t)", "範疇三(t)"];
             const rows = currentRecords.map(r => [
                 r.record_id,
-                toTaiwanTime(r.timestamp), // 匯出報表也轉為台灣時間
+                toTaiwanTime(r.timestamp), 
                 "製造業 (C)",
                 r.total_tCO2e,
                 r.breakdown?.scope1 || 0,
@@ -732,7 +722,6 @@
                 document.getElementById('res-s2').innerText = breakdown.scope2;
                 document.getElementById('res-s3').innerText = breakdown.scope3;
                 
-                // 修正：除錯訊息顯示台灣時間
                 debug.innerText = `> 成功！資料已寫入資料庫。\n> Record ID: ${data.record_id}\n> 時間: ${toTaiwanTime(data.timestamp)}\n> 模擬計算結果已回傳。`;
 
                 await loadHistoryData();
