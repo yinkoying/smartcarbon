@@ -99,8 +99,7 @@
             </form>
 
             <div id="connection-error-msg" class="hidden mt-4 text-xs text-red-500 bg-red-50 p-2 rounded border border-red-200 text-left relative z-10">
-                <p class="font-bold"><i class="fa-solid fa-triangle-exclamation mr-1"></i> AWS 連線失敗</p>
-                <p class="mt-1">系統將以離線狀態啟動。請檢查 Lambda Function URL CORS 設定。</p>
+                <!-- 錯誤訊息會由 JS 動態插入 -->
             </div>
         </div>
         
@@ -366,6 +365,8 @@
     </div>
 
     <script>
+        // TODO: 請務必替換為您自己的 AWS Lambda Function URL
+        // 若使用無效的範例 URL，連線將會失敗
         const lambdaUrl = "https://p5m47aire4jf7yfjox2natmszq0pzmdy.lambda-url.ap-northeast-1.on.aws"; 
         
         let myChart = null; 
@@ -457,7 +458,7 @@
                 console.error("Login failed (network/CORS):", err);
                 updateStatus('error');
                 errorMsg.classList.remove('hidden');
-                errorMsg.innerHTML = '<p class="font-bold"><i class="fa-solid fa-triangle-exclamation mr-1"></i> 連線失敗</p><p class="mt-1">請檢查：<br>1. AWS Function URL 是否正確？<br>2. Lambda CORS 是否允許此網域？</p>';
+                errorMsg.innerHTML = '<p class="font-bold"><i class="fa-solid fa-triangle-exclamation mr-1"></i> 連線失敗</p><p class="mt-1">請檢查：<br>1. 是否已將程式碼中的 lambdaUrl 替換為您的真實網址？<br>2. AWS Function URL CORS 設定是否已允許本網域？</p>';
                 await new Promise(r => setTimeout(r, 1500));
             } finally {
                 document.getElementById('login-modal').classList.add('hidden');
@@ -678,7 +679,7 @@
             } catch (err) {
                 console.error("Connection Error:", err);
                 if (err.message.includes('Failed to fetch')) {
-                    debug.innerText = `> 連線錯誤：請求被阻擋。\n> 可能原因：\n1. Lambda URL 錯誤或未設定。\n2. 您的瀏覽器阻擋了跨域請求 (CORS)。\n3. AWS Lambda 未正確回傳 CORS Header。`;
+                    debug.innerText = `> 連線錯誤：請求被阻擋。\n> 可能原因：\n1. Lambda URL 錯誤或未設定。\n2. 您的瀏覽器阻擋了跨域請求 (CORS) (請檢查 AWS Console)。\n3. AWS Lambda 未正確回傳 CORS Header。`;
                 } else {
                     debug.innerText = `> 失敗：${err.message}\n> 請檢查 AWS Lambda 日誌。`;
                 }
