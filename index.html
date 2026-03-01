@@ -13,9 +13,15 @@
         
         .sidebar-active { 
             background: linear-gradient(90deg, rgba(0,77,64,1) 0%, rgba(0,105,92,1) 100%); 
-            border-left: 4px solid #00df9a; 
             box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
         }
+        @media (min-width: 768px) {
+            .sidebar-active { border-left-color: #00df9a !important; }
+        }
+        @media (max-width: 767px) {
+            .sidebar-active { border-bottom-color: #00df9a !important; }
+        }
+
         .sidebar-item:hover { background-color: rgba(255,255,255,0.1); }
         
         .loader {
@@ -67,9 +73,9 @@
 </head>
 <body class="h-screen overflow-hidden flex flex-col">
 
-    <div id="login-modal" class="fixed inset-0 z-50 flex flex-col items-center justify-center login-bg">
+    <div id="login-modal" class="fixed inset-0 z-50 flex flex-col items-center justify-center login-bg px-4">
         
-        <div class="relative w-40 h-40 mb-[-30px] z-10 animate-float cursor-pointer group" onclick="changeMascotText()">
+        <div class="relative w-32 h-32 md:w-40 md:h-40 mb-[-20px] md:mb-[-30px] z-10 animate-float cursor-pointer group" onclick="changeMascotText()">
             
             <div id="mascot-speech" class="absolute -top-24 left-1/2 transform -translate-x-1/2 w-48 bg-white text-teal-900 text-sm font-bold p-3 rounded-2xl shadow-xl border-2 border-teal-400 speech-bubble-enter text-center z-20">
                 <span id="mascot-text">嗨！我是碳吉 🌱<br><span class="text-xs text-gray-500 font-normal">您的 ESG 智慧小幫手</span></span>
@@ -81,13 +87,13 @@
                  class="w-full h-full object-contain mascot-shadow transition-transform duration-300 group-hover:scale-110 rounded-full">
         </div>
 
-        <div class="bg-white rounded-xl shadow-2xl p-8 w-[480px] text-center pt-12 relative z-0">
+        <div class="bg-white rounded-xl shadow-2xl p-6 md:p-8 w-full max-w-[480px] text-center pt-10 md:pt-12 relative z-0">
             <div class="absolute top-4 right-4 text-teal-100/50">
-                <i class="fa-solid fa-leaf text-6xl transform rotate-12"></i>
+                <i class="fa-solid fa-leaf text-4xl md:text-6xl transform rotate-12"></i>
             </div>
 
-            <h2 class="text-2xl font-bold text-gray-800 relative z-10">企業綠色融資暨智慧碳管理平台</h2>
-            <p class="text-sm text-gray-500 mt-2 mb-6 relative z-10 font-mono">Enterprise-grade Simulation System (PoC)</p>
+            <h2 class="text-xl md:text-2xl font-bold text-gray-800 relative z-10">企業綠色融資暨智慧碳管理平台</h2>
+            <p class="text-xs md:text-sm text-gray-500 mt-2 mb-6 relative z-10 font-mono">Enterprise-grade Simulation System (PoC)</p>
             
             <form onsubmit="handleLogin(event)" class="space-y-4 relative z-10">
                 <input type="text" id="user-id-input" placeholder="請輸入員工編號" class="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-teal-500 transition-all">
@@ -102,54 +108,54 @@
             </div>
         </div>
         
-        <div class="mt-8 text-center space-y-2">
+        <div class="mt-6 md:mt-8 text-center space-y-2">
             <div class="text-teal-200/60 text-xs font-mono">Powered by AWS Lambda & DynamoDB</div>
-            <div class="text-teal-200/40 text-[10px] bg-black/20 px-3 py-1 rounded-full">
+            <div class="text-teal-200/40 text-[10px] bg-black/20 px-3 py-1 rounded-full mx-auto max-w-xs md:max-w-none">
                 <i class="fa-solid fa-flask mr-1"></i> 本平台目前為系統架構設計課程之 PoC 模擬展示環境
             </div>
         </div>
     </div>
 
-    <div id="main-layout" class="flex-1 flex overflow-hidden hidden opacity-0 transition-opacity duration-500 relative">
+    <div id="main-layout" class="flex-1 flex flex-col md:flex-row overflow-hidden hidden opacity-0 transition-opacity duration-500 relative">
         
-        <aside class="w-72 bg-slate-900 text-slate-300 flex flex-col shadow-xl z-20">
-            <div class="h-16 flex items-center px-6 bg-slate-800 border-b border-slate-700">
+        <aside class="w-full md:w-72 bg-slate-900 text-slate-300 flex flex-col shadow-xl z-20 flex-shrink-0">
+            <div class="hidden md:flex h-16 items-center px-6 bg-slate-800 border-b border-slate-700">
                 <i class="fa-solid fa-cloud text-teal-400 text-lg mr-2"></i>
                 <span class="font-bold text-white text-sm tracking-wide">綠色融資暨碳管理平台</span>
             </div>
-            <nav class="flex-1 py-6 space-y-1 overflow-y-auto">
-                <a href="#" onclick="switchTab('dashboard')" id="nav-dashboard" class="sidebar-item sidebar-active flex items-center px-6 py-3 border-l-4 border-green-400 transition-all">
-                    <i class="fa-solid fa-chart-pie w-5 mr-3 text-center"></i>
-                    <span class="font-medium text-sm">總覽儀表板</span>
+            <nav class="flex-none md:flex-1 flex flex-row md:flex-col overflow-x-auto md:overflow-y-auto w-full py-0 md:py-6">
+                <a href="#" onclick="switchTab('dashboard')" id="nav-dashboard" class="sidebar-item sidebar-active flex-shrink-0 flex items-center justify-center md:justify-start px-4 md:px-6 py-3 border-b-4 md:border-b-0 md:border-l-4 border-green-400 transition-all">
+                    <i class="fa-solid fa-chart-pie md:w-5 mr-2 md:mr-3 text-center"></i>
+                    <span class="font-medium text-sm whitespace-nowrap">總覽儀表板</span>
                 </a>
-                <a href="#" onclick="switchTab('carbon-calc')" id="nav-carbon-calc" class="sidebar-item flex items-center px-6 py-3 border-l-4 border-transparent transition-all">
-                    <i class="fa-solid fa-calculator w-5 mr-3 text-center"></i>
-                    <span class="font-medium text-sm">碳排試算引擎</span>
+                <a href="#" onclick="switchTab('carbon-calc')" id="nav-carbon-calc" class="sidebar-item flex-shrink-0 flex items-center justify-center md:justify-start px-4 md:px-6 py-3 border-b-4 md:border-b-0 md:border-l-4 border-transparent transition-all">
+                    <i class="fa-solid fa-calculator md:w-5 mr-2 md:mr-3 text-center"></i>
+                    <span class="font-medium text-sm whitespace-nowrap">碳排試算引擎</span>
                 </a>
                 
-                <div class="px-6 py-2 mt-4 text-xs font-bold text-slate-500 uppercase tracking-wider">數據管理</div>
+                <div class="hidden md:block px-6 py-2 mt-4 text-xs font-bold text-slate-500 uppercase tracking-wider">數據管理</div>
                 
-                <a href="#" onclick="switchTab('inventory')" id="nav-inventory" class="sidebar-item flex items-center px-6 py-3 border-l-4 border-transparent transition-all hover:bg-slate-800 hover:text-white">
-                    <i class="fa-solid fa-list-check w-5 mr-3 text-center"></i>
-                    <span class="font-medium text-sm">盤查清冊管理</span>
+                <a href="#" onclick="switchTab('inventory')" id="nav-inventory" class="sidebar-item flex-shrink-0 flex items-center justify-center md:justify-start px-4 md:px-6 py-3 border-b-4 md:border-b-0 md:border-l-4 border-transparent transition-all hover:bg-slate-800 hover:text-white">
+                    <i class="fa-solid fa-list-check md:w-5 mr-2 md:mr-3 text-center"></i>
+                    <span class="font-medium text-sm whitespace-nowrap">盤查清冊管理</span>
                 </a>
-                <a href="#" class="sidebar-item flex items-center px-6 py-3 border-l-4 border-transparent opacity-60 cursor-not-allowed" title="權限不足">
-                    <i class="fa-solid fa-truck-fast w-5 mr-3 text-center"></i>
-                    <span class="font-medium text-sm">供應鏈碳排數據</span>
+                <a href="#" class="sidebar-item flex-shrink-0 flex items-center justify-center md:justify-start px-4 md:px-6 py-3 border-b-4 md:border-b-0 md:border-l-4 border-transparent opacity-60 cursor-not-allowed" title="權限不足">
+                    <i class="fa-solid fa-truck-fast md:w-5 mr-2 md:mr-3 text-center"></i>
+                    <span class="font-medium text-sm whitespace-nowrap">供應鏈碳排數據</span>
                 </a>
 
-                <div class="px-6 py-2 mt-4 text-xs font-bold text-slate-500 uppercase tracking-wider">融資與合規</div>
+                <div class="hidden md:block px-6 py-2 mt-4 text-xs font-bold text-slate-500 uppercase tracking-wider">融資與合規</div>
 
-                <a href="#" class="sidebar-item flex items-center px-6 py-3 border-l-4 border-transparent opacity-60 cursor-not-allowed" title="權限不足">
-                    <i class="fa-solid fa-bullseye w-5 mr-3 text-center"></i>
-                    <span class="font-medium text-sm">減碳目標追蹤</span>
+                <a href="#" class="sidebar-item flex-shrink-0 flex items-center justify-center md:justify-start px-4 md:px-6 py-3 border-b-4 md:border-b-0 md:border-l-4 border-transparent opacity-60 cursor-not-allowed" title="權限不足">
+                    <i class="fa-solid fa-bullseye md:w-5 mr-2 md:mr-3 text-center"></i>
+                    <span class="font-medium text-sm whitespace-nowrap">減碳目標追蹤</span>
                 </a>
-                <a href="#" class="sidebar-item flex items-center px-6 py-3 border-l-4 border-transparent opacity-60 cursor-not-allowed" title="權限不足">
-                    <i class="fa-solid fa-file-contract w-5 mr-3 text-center"></i>
-                    <span class="font-medium text-sm">稽核報告下載</span>
+                <a href="#" class="sidebar-item flex-shrink-0 flex items-center justify-center md:justify-start px-4 md:px-6 py-3 border-b-4 md:border-b-0 md:border-l-4 border-transparent opacity-60 cursor-not-allowed" title="權限不足">
+                    <i class="fa-solid fa-file-contract md:w-5 mr-2 md:mr-3 text-center"></i>
+                    <span class="font-medium text-sm whitespace-nowrap">稽核報告下載</span>
                 </a>
             </nav>
-            <div class="p-4 bg-slate-800 border-t border-slate-700">
+            <div class="hidden md:flex p-4 bg-slate-800 border-t border-slate-700">
                 <div class="flex items-center">
                     <div class="w-8 h-8 rounded-full bg-teal-600 flex items-center justify-center text-white font-bold text-xs">Y</div>
                     <div class="ml-3">
@@ -161,65 +167,70 @@
         </aside>
 
         <main class="flex-1 flex flex-col min-w-0 bg-gray-50 relative">
-            <header class="h-16 bg-white shadow-sm border-b border-gray-200 flex items-center justify-between px-8">
-                <div class="flex items-center gap-3">
-                    <h1 class="text-xl font-bold text-gray-800" id="page-title">總覽儀表板</h1>
+            <header class="bg-white shadow-sm border-b border-gray-200 flex flex-wrap md:flex-nowrap items-center justify-between px-4 md:px-8 py-3 md:py-0 md:h-16 gap-3 md:gap-0 flex-shrink-0">
+                <div class="flex items-center gap-3 w-full md:w-auto justify-between md:justify-start">
+                    <h1 class="text-lg md:text-xl font-bold text-gray-800" id="page-title">總覽儀表板</h1>
+                    <div class="flex md:hidden items-center gap-2">
+                        <span class="text-xs font-medium text-gray-600">殷小可</span>
+                        <div class="w-6 h-6 rounded-full bg-teal-600 flex items-center justify-center text-white font-bold text-[10px]">Y</div>
+                    </div>
                 </div>
-                <div class="flex items-center gap-3">
-                    <button onclick="exportCSV()" class="flex items-center gap-2 px-3 py-1.5 bg-white border border-gray-300 text-gray-600 text-sm font-medium rounded hover:bg-gray-50 transition shadow-sm">
+                <div class="flex items-center gap-2 md:gap-3 w-full md:w-auto justify-between md:justify-end">
+                    <button onclick="exportCSV()" class="flex items-center gap-2 px-3 py-1.5 bg-white border border-gray-300 text-gray-600 text-xs md:text-sm font-medium rounded hover:bg-gray-50 transition shadow-sm whitespace-nowrap">
                         <i class="fa-solid fa-file-csv text-green-600"></i>
-                        匯出融資審查用報表
+                        <span class="hidden sm:inline">匯出融資審查用報表</span>
+                        <span class="sm:hidden">匯出報表</span>
                     </button>
-                    <div class="h-6 w-px bg-gray-300 mx-1"></div>
-                    <button onclick="loadHistoryData()" class="text-gray-400 hover:text-teal-600 transition p-2" title="重新整理數據">
+                    <div class="h-6 w-px bg-gray-300 mx-1 flex-shrink-0"></div>
+                    <button onclick="loadHistoryData()" class="text-gray-400 hover:text-teal-600 transition p-2 flex-shrink-0" title="重新整理數據">
                         <i class="fa-solid fa-rotate-right"></i>
                     </button>
-                    <div id="aws-status-badge" class="text-xs text-gray-500 font-bold bg-gray-100 px-3 py-1 rounded-full border border-gray-200 flex items-center gap-1">
+                    <div id="aws-status-badge" class="text-[10px] md:text-xs text-gray-500 font-bold bg-gray-100 px-2 md:px-3 py-1 rounded-full border border-gray-200 flex items-center gap-1 flex-shrink-0 whitespace-nowrap">
                         <div class="w-2 h-2 rounded-full bg-gray-400"></div> AWS 狀態未定
                     </div>
                 </div>
             </header>
 
-            <div class="flex-1 overflow-y-auto p-8 pb-32"> 
+            <div class="flex-1 overflow-y-auto p-4 md:p-8 pb-32"> 
                 
                 <div id="view-dashboard" class="space-y-6">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div class="glass-card rounded-xl p-6 border-l-4 border-green-500">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+                        <div class="glass-card rounded-xl p-5 md:p-6 border-l-4 border-green-500">
                             <p class="text-xs font-bold text-gray-500 uppercase">全行綠色融資餘額</p>
-                            <p class="text-2xl font-bold text-gray-800 mt-2">NT$ 1,250 億</p>
+                            <p class="text-xl md:text-2xl font-bold text-gray-800 mt-2">NT$ 1,250 億</p>
                         </div>
-                        <div class="glass-card rounded-xl p-6 border-l-4 border-blue-500">
+                        <div class="glass-card rounded-xl p-5 md:p-6 border-l-4 border-blue-500">
                             <p class="text-xs font-bold text-gray-500 uppercase">歷史累計投融資碳排</p>
-                            <p id="total-emissions-display" class="text-2xl font-bold text-gray-800 mt-2">
+                            <p id="total-emissions-display" class="text-xl md:text-2xl font-bold text-gray-800 mt-2">
                                 - <span class="text-sm font-normal text-gray-400">tCO2e</span>
                             </p>
                         </div>
-                        <div class="glass-card rounded-xl p-6 border-l-4 border-purple-500">
+                        <div class="glass-card rounded-xl p-5 md:p-6 border-l-4 border-purple-500">
                             <p class="text-xs font-bold text-gray-500 uppercase">PCAF 覆蓋率</p>
-                            <p class="text-2xl font-bold text-gray-800 mt-2">92.5%</p>
+                            <p class="text-xl md:text-2xl font-bold text-gray-800 mt-2">92.5%</p>
                         </div>
                     </div>
-                    <div class="glass-card rounded-xl p-6">
+                    <div class="glass-card rounded-xl p-4 md:p-6">
                         <div class="flex justify-between items-center mb-4">
                             <h3 class="font-bold text-gray-700">企業碳排放歷史趨勢</h3>
-                            <span class="text-xs text-gray-400">AWS DynamoDB 實時數據</span>
+                            <span class="text-[10px] md:text-xs text-gray-400">AWS DynamoDB 實時數據</span>
                         </div>
-                        <div class="h-64"><canvas id="mainChart"></canvas></div>
+                        <div class="h-64 w-full"><canvas id="mainChart"></canvas></div>
                     </div>
                 </div>
 
                 <div id="view-carbon-calc" class="hidden space-y-6">
-                    <div class="glass-card rounded-xl p-8 max-w-4xl mx-auto">
-                        <h3 class="font-bold text-lg text-gray-800 mb-2 flex items-center">
-                            <i class="fa-brands fa-aws text-orange-500 text-2xl mr-3"></i> ISO 14064-1 企業全方位碳排試算
+                    <div class="glass-card rounded-xl p-4 md:p-8 w-full max-w-4xl mx-auto">
+                        <h3 class="font-bold text-base md:text-lg text-gray-800 mb-2 flex items-center">
+                            <i class="fa-brands fa-aws text-orange-500 text-xl md:text-2xl mr-2 md:mr-3"></i> ISO 14064-1 企業全方位碳排試算
                         </h3>
                         
-                        <div class="mb-6 bg-gray-50 p-3 rounded-lg border border-gray-200 flex items-center gap-3">
+                        <div class="mb-6 bg-gray-50 p-3 rounded-lg border border-gray-200 flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3">
                             <label class="text-sm font-bold text-gray-700 whitespace-nowrap">行業別設定：</label>
-                            <select id="industry-select" class="flex-1 p-2 border border-gray-300 rounded text-sm text-gray-700 focus:ring-2 focus:ring-teal-500 outline-none bg-white" disabled>
+                            <select id="industry-select" class="w-full sm:flex-1 p-2 border border-gray-300 rounded text-sm text-gray-700 focus:ring-2 focus:ring-teal-500 outline-none bg-white" disabled>
                                 <option value="C" selected>C 大類 - 製造業</option>
                             </select>
-                            <span class="text-xs text-orange-500 font-medium px-2 py-1 bg-orange-100 rounded">
+                            <span class="text-xs text-orange-500 font-medium px-2 py-1 bg-orange-100 rounded whitespace-nowrap">
                                 <i class="fa-solid fa-lock mr-1"></i> 模擬鎖定
                             </span>
                         </div>
@@ -280,20 +291,20 @@
                             </div>
                         </div>
 
-                        <div class="bg-slate-50 p-6 rounded-xl border flex flex-col md:flex-row justify-between items-center gap-6">
-                            <div class="flex gap-8 text-center">
+                        <div class="bg-slate-50 p-4 md:p-6 rounded-xl border flex flex-col md:flex-row justify-between items-center gap-4 md:gap-6">
+                            <div class="flex flex-col sm:flex-row gap-4 sm:gap-8 text-center items-center">
                                 <div>
                                     <p class="text-[10px] text-gray-400 uppercase">本次計算排放量</p>
-                                    <p id="result-total" class="text-3xl font-bold text-slate-800">0.000 <span class="text-sm font-normal">tCO2e</span></p>
+                                    <p id="result-total" class="text-2xl md:text-3xl font-bold text-slate-800">0.000 <span class="text-sm font-normal">tCO2e</span></p>
                                 </div>
-                                <div class="hidden md:block border-l h-10 self-center"></div>
-                                <div class="text-left text-[10px] text-gray-500 space-y-1">
+                                <div class="hidden sm:block border-l h-10 self-center"></div>
+                                <div class="w-full sm:w-auto border-t sm:border-t-0 sm:border-l border-gray-200 pt-3 sm:pt-0 sm:pl-8 text-center sm:text-left text-[10px] text-gray-500 flex sm:block justify-around sm:space-y-1">
                                     <p>S1: <span id="res-s1">0</span> t</p>
                                     <p>S2: <span id="res-s2">0</span> t</p>
                                     <p>S3: <span id="res-s3">0</span> t</p>
                                 </div>
                             </div>
-                            <button onclick="calcFullCarbon()" id="calc-btn" class="w-full md:w-auto bg-orange-500 hover:bg-orange-600 text-white px-10 py-3 rounded-lg font-bold shadow-lg transition transform active:scale-95 flex items-center justify-center">
+                            <button onclick="calcFullCarbon()" id="calc-btn" class="w-full md:w-auto bg-orange-500 hover:bg-orange-600 text-white px-6 md:px-10 py-3 rounded-lg font-bold shadow-lg transition transform active:scale-95 flex items-center justify-center">
                                 呼叫 AWS Lambda 運算
                             </button>
                         </div>
@@ -302,19 +313,19 @@
                 </div>
 
                 <div id="view-inventory" class="hidden space-y-6">
-                    <div class="glass-card rounded-xl p-8">
-                        <h3 class="font-bold text-lg text-gray-800 mb-6 flex items-center">
-                            <i class="fa-solid fa-database text-teal-600 mr-3"></i> 歷史盤查清冊管理 (AWS DynamoDB)
+                    <div class="glass-card rounded-xl p-4 md:p-8">
+                        <h3 class="font-bold text-base md:text-lg text-gray-800 mb-4 md:mb-6 flex items-center">
+                            <i class="fa-solid fa-database text-teal-600 mr-2 md:mr-3"></i> 歷史盤查清冊管理 (AWS DynamoDB)
                         </h3>
                         <div class="overflow-x-auto">
                             <table class="min-w-full divide-y divide-gray-200">
                                 <thead class="bg-gray-50">
                                     <tr>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">時間戳記 (台灣時間)</th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">產業類別</th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">總碳排 (tCO2e)</th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">範疇佔比 (S1/S2/S3)</th>
-                                        <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
+                                        <th scope="col" class="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">時間戳記 (台灣時間)</th>
+                                        <th scope="col" class="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">產業類別</th>
+                                        <th scope="col" class="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">總碳排 (tCO2e)</th>
+                                        <th scope="col" class="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">範疇佔比 (S1/S2/S3)</th>
+                                        <th scope="col" class="px-4 md:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">操作</th>
                                     </tr>
                                 </thead>
                                 <tbody id="inventory-table-body" class="bg-white divide-y divide-gray-200">
@@ -333,9 +344,9 @@
 
             </div>
 
-            <div id="guide-mascot" class="fixed bottom-6 right-6 z-50 flex flex-col items-end">
-                <div id="guide-bubble" class="bg-white border-2 border-teal-500 rounded-2xl p-4 shadow-xl mb-2 w-64 hidden relative guide-bubble-anim">
-                    <button onclick="toggleGuideBubble()" class="absolute top-2 right-2 text-gray-400 hover:text-gray-600">
+            <div id="guide-mascot" class="fixed bottom-4 right-4 md:bottom-6 md:right-6 z-50 flex flex-col items-end">
+                <div id="guide-bubble" class="bg-white border-2 border-teal-500 rounded-2xl p-4 shadow-xl mb-2 w-[calc(100vw-2rem)] max-w-xs md:w-64 hidden relative guide-bubble-anim">
+                    <button onclick="toggleGuideBubble()" class="absolute top-2 right-2 text-gray-400 hover:text-gray-600 p-1">
                         <i class="fa-solid fa-times"></i>
                     </button>
                     <h4 class="font-bold text-teal-700 mb-1 flex items-center">
@@ -351,7 +362,7 @@
                     <div class="absolute -bottom-2 right-8 w-4 h-4 bg-white border-b-2 border-r-2 border-teal-500 rotate-45"></div>
                 </div>
                 
-                <div onclick="toggleGuideBubble()" class="w-16 h-16 cursor-pointer animate-float hover:scale-110 transition-transform relative group">
+                <div onclick="toggleGuideBubble()" class="w-14 h-14 md:w-16 md:h-16 cursor-pointer animate-float hover:scale-110 transition-transform relative group">
                     <img src="https://raw.githubusercontent.com/tanji2026/ccus/main/tanjibaby.png" 
                          class="w-full h-full object-contain filter drop-shadow-lg rounded-full" alt="召喚碳吉">
                     <div class="absolute right-full mr-2 top-1/2 -translate-y-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
@@ -424,13 +435,13 @@
         function updateStatus(status) {
             const badge = document.getElementById('aws-status-badge');
             if (status === 'connected') {
-                badge.className = "text-xs text-green-600 font-bold bg-green-50 px-3 py-1 rounded-full border border-green-200 flex items-center gap-1";
+                badge.className = "text-[10px] md:text-xs text-green-600 font-bold bg-green-50 px-2 md:px-3 py-1 rounded-full border border-green-200 flex items-center gap-1 flex-shrink-0 whitespace-nowrap";
                 badge.innerHTML = '<div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div> AWS 連線成功';
             } else if (status === 'error') {
-                badge.className = "text-xs text-red-600 font-bold bg-red-50 px-3 py-1 rounded-full border border-red-200 flex items-center gap-1";
+                badge.className = "text-[10px] md:text-xs text-red-600 font-bold bg-red-50 px-2 md:px-3 py-1 rounded-full border border-red-200 flex items-center gap-1 flex-shrink-0 whitespace-nowrap";
                 badge.innerHTML = '<div class="w-2 h-2 rounded-full bg-red-500"></div> 連線失敗';
             } else {
-                badge.className = "text-xs text-gray-500 font-bold bg-gray-100 px-3 py-1 rounded-full border border-gray-200 flex items-center gap-1";
+                badge.className = "text-[10px] md:text-xs text-gray-500 font-bold bg-gray-100 px-2 md:px-3 py-1 rounded-full border border-gray-200 flex items-center gap-1 flex-shrink-0 whitespace-nowrap";
                 badge.innerHTML = '<div class="w-2 h-2 rounded-full bg-gray-400"></div> AWS 狀態未定';
             }
         }
@@ -584,15 +595,15 @@
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-gray-50 transition-colors";
                 tr.innerHTML = `
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-mono">${toTaiwanTime(r.timestamp)}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">
+                    <td class="px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-mono">${toTaiwanTime(r.timestamp)}</td>
+                    <td class="px-4 md:px-6 py-4 whitespace-nowrap">
                         <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">製造業 (C)</span>
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">${r.total_tCO2e}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td class="px-4 md:px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">${r.total_tCO2e}</td>
+                    <td class="px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         ${r.breakdown?.scope1} / ${r.breakdown?.scope2} / ${r.breakdown?.scope3}
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <td class="px-4 md:px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <button onclick="deleteRecord('${r.record_id}', '${r.timestamp}')" class="text-red-600 hover:text-red-900 hover:underline">
                             <i class="fa-solid fa-trash-can mr-1"></i> 刪除
                         </button>
